@@ -1,16 +1,100 @@
-# React + Vite
+# 🚀 Ayush Raj Tiwary — Developer Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to my personal portfolio built with **React + Vite**.  
+This project showcases my journey as a **Full Stack Developer & AI/ML Enthusiast**, highlighting my skills, projects, and passion for building intelligent real-world applications.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌐 Live Website
+👉 https://artiwary.vercel.app/
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 👨‍💻 About Me
 
-## Expanding the ESLint configuration
+I am **Ayush Raj Tiwary**, a 3rd-year B.Tech student specializing in  
+**Artificial Intelligence & Machine Learning**.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+I enjoy building modern, scalable, and intelligent applications that combine:
+- ⚡ Full Stack Web Development
+- 🧠 Artificial Intelligence & Machine Learning
+- 🎨 Clean UI/UX Design
+- 🚀 Real-world problem-solving systems
+
+My goal is to merge **software engineering + AI innovation** to create impactful digital solutions.
+
+---
+
+## 🛠️ Tech Stack
+
+### 💻 Languages & Frameworks
+
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=react,nodejs,express,tailwind,python,git,github,vite" />
+</p>
+
+---
+
+### 🤖 AI / ML Stack
+
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=python,tensorflow,pytorch,opencv" />
+</p>
+
+---
+
+## 📂 Featured Projects
+
+### 🔹 Gesture File Transfer System
+AI-based gesture-controlled file transfer using computer vision.  
+**Tech:** React, Node.js, Express.js  
+🔗 GitHub: https://github.com/ARTiwary/Air-gesture-recognition
+
+---
+
+### 🔹 Brain Tumor Detection System
+Deep learning model for detecting brain tumors using CNN & ResNet18.  
+**Tech:** Python, FastAPI, React, Deep Learning
+
+---
+
+### 🔹 Suraksha Setu — Tourist Safety System
+AI-powered safety assistance system for tourists.  
+**Tech:** React, Python, Tailwind
+
+---
+
+### 🔹 Road Accident Detection System
+Real-time accident detection using CNN-based AI model.  
+**Tech:** Python, FastAPI, React
+
+---
+
+## ⚡ Features of This Portfolio
+
+- 🌌 Modern dark-themed UI
+- ✨ Smooth GSAP animations
+- 📱 Fully responsive design
+- ⚡ Fast Vite build system
+- 🎯 Interactive project showcase
+- 🎨 Glassmorphism UI design
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# Clone repository
+git clone https://github.com/your-username/portfolio.git
+
+# Navigate to project
+cd portfolio
+
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
