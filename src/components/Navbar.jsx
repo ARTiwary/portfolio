@@ -36,7 +36,7 @@ const Navbar = () => {
         {/* Right Side: CTA Button */}
         <div className="flex-shrink-0">
           <button className="relative overflow-hidden group px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-sans font-semibold text-sm tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.5)]">
-            <span className="relative z-10">Hire Me</span>
+            <span className="relative z-10">Open to Opportunities</span>
             {/* Subtle inner hover glow */}
             <div className="absolute inset-0 h-full w-full bg-white/20 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
           </button>
