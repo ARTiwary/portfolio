@@ -56,18 +56,21 @@ AI-based gesture-controlled file transfer using computer vision.
 Deep learning model for detecting brain tumors using CNN & ResNet18.  
 **Tech:** Python, FastAPI, React, Deep Learning
 🔗 GitHub: https://github.com/ARTiwary/MRI-brain-tumour-detection-with-gesture-control-
+
 ---
 
 ### 🔹 Suraksha Setu — Tourist Safety System
 AI-powered safety assistance system for tourists.  
 **Tech:** React, Python, Tailwind
 🔗 GitHub: https://github.com/ARTiwary/compass-comfort-kit
+
 ---
 
 ### 🔹 Road Accident Detection System
 Real-time accident detection using CNN-based AI model.  
 **Tech:** Python, FastAPI, React
 🔗 GitHub: https://github.com/ARTiwary/Road_accident-_alert_system
+
 ---
 
 ## ⚡ Features of This Portfolio
