@@ -6,6 +6,8 @@ import Works from './components/Works'
 import Services from './components/Services'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import React from 'react';
+import AIAgent from './components/AIAgent';
 
 function App() {
   return (
@@ -17,6 +19,9 @@ function App() {
       <Works />
       <Contact />
       <Footer />
+      
+      {/* 🤖 Floating Custom AI Agent Widget */}
+      <AIAgent />
     </main>
   )
 }
