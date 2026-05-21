@@ -11,46 +11,49 @@ const About = () => {
   const statsRef = useRef(null);
 
   useEffect(() => {
-    gsap.fromTo(contentRef.current,
+    gsap.fromTo(
+      contentRef.current,
       { opacity: 0, y: 50 },
       {
         opacity: 1,
         y: 0,
         duration: 1.5,
-        ease: "power3.out",
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 70%",
-        }
+          start: 'top 70%',
+        },
       }
     );
 
-    gsap.fromTo(statsRef.current.children,
+    gsap.fromTo(
+      statsRef.current.children,
       { opacity: 0, y: 30 },
       {
         opacity: 1,
         y: 0,
         duration: 1,
         stagger: 0.2,
-        ease: "power2.out",
+        ease: 'power2.out',
         scrollTrigger: {
           trigger: statsRef.current,
-          start: "top 85%",
-        }
+          start: 'top 85%',
+        },
       }
     );
 
-    gsap.fromTo(imageRef.current,
+    gsap.fromTo(
+      imageRef.current,
       { opacity: 0, scale: 0.9 },
       {
         opacity: 1,
         scale: 1,
         duration: 2,
-        ease: "power2.out",
+        ease: 'power2.out',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 60%",
-        }
+          start: 'top 60%',
+        },
       }
     );
   }, []);
@@ -72,26 +75,38 @@ const About = () => {
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-16">
 
         {/* LEFT CONTENT */}
-        <div ref={contentRef} className="flex-1 w-full flex flex-col justify-center">
-
+        <div
+          ref={contentRef}
+          className="flex-1 w-full flex flex-col justify-center"
+        >
           <h2 className="text-5xl md:text-7xl font-black text-white mb-8">
             About Me
           </h2>
+
           <p className="text-xl md:text-2xl text-gray-200 leading-relaxed mb-6">
-            I’m Ayush Raj Tiwary, a 3rd-year B.Tech student specializing in Artificial Intelligence and Machine Learning, and a Full Stack Developer focused on building modern, scalable web applications.
-            </p>
+            I’m Ayush Raj Tiwary, a 3rd-year B.Tech student specializing in
+            Artificial Intelligence and Machine Learning, and a Full Stack
+            Developer focused on building modern, scalable web applications.
+          </p>
+
           <p className="text-base md:text-lg text-gray-400 leading-loose mb-12">
-            I work primarily with the MERN stack while also exploring AI/ML concepts like deep learning, computer vision, and model deployment. I enjoy turning ideas into real-world applications by combining software engineering with intelligent systems.
-            </p>
+            I work primarily with the MERN stack while also exploring AI/ML
+            concepts like deep learning, computer vision, and model deployment.
+            I enjoy turning ideas into real-world applications by combining
+            software engineering with intelligent systems.
+          </p>
 
           {/* STATS */}
-          <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-3 gap-6">
-
+          <div
+            ref={statsRef}
+            className="grid grid-cols-2 md:grid-cols-3 gap-6"
+          >
             {/* Projects */}
             <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10">
               <h3 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500 mb-2">
                 5+
               </h3>
+
               <p className="text-sm text-gray-400 uppercase">
                 Projects Built
               </p>
@@ -102,6 +117,7 @@ const About = () => {
               <h3 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-pink-500 mb-2">
                 3rd Year
               </h3>
+
               <p className="text-sm text-gray-400 uppercase">
                 B.Tech Student
               </p>
@@ -112,35 +128,34 @@ const About = () => {
               <h3 className="text-4xl font-black text-white mb-2">
                 Full Stack
               </h3>
+
               <p className="text-sm text-gray-400 uppercase">
                 Developer Focus
               </p>
             </div>
-
           </div>
         </div>
 
-        {/* RIGHT VISUAL */}
-        <div ref={imageRef} className="flex-1 w-full flex items-center justify-center mt-16 lg:mt-0">
-
+        {/* RIGHT IMAGE */}
+        <div
+          ref={imageRef}
+          className="flex-1 w-full flex items-center justify-center mt-16 lg:mt-0"
+        >
           <div className="relative w-72 h-72 md:w-96 md:h-96">
 
+            {/* Glow Effects */}
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/30 via-purple-600/20 to-transparent rounded-full blur-3xl animate-pulse" />
 
             <div className="absolute inset-4 bg-gradient-to-bl from-indigo-500/20 via-transparent to-pink-500/20 rounded-full blur-2xl animate-pulse" />
 
-            <div className="absolute inset-8 rounded-3xl bg-[#0a0a0a]/80 backdrop-blur-2xl border border-white/10 flex items-center justify-center">
+            {/* Image Container */}
+            <div className="absolute inset-8 rounded-3xl bg-[#0a0a0a]/80 backdrop-blur-2xl border border-white/10 overflow-hidden shadow-2xl">
 
-              <div className="w-full h-full relative opacity-80">
-                <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/20 rounded-full blur-xl" />
-                <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-500/20 rounded-full blur-xl" />
-
-                <div className="absolute inset-0 flex flex-col items-center justify-end pb-8">
-                  <div className="w-16 h-20 bg-white/5 border border-white/10 rounded-full mb-3" />
-                  <div className="w-32 h-24 bg-white/5 border border-white/10 rounded-t-3xl" />
-                </div>
-
-              </div>
+              <img
+                src="/profile.jpg"
+                alt="Ayush Raj Tiwary"
+                className="w-full h-full object-cover rounded-3xl transition-transform duration-500 hover:scale-105"
+              />
 
             </div>
           </div>
