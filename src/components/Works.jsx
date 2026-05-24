@@ -11,6 +11,7 @@ const projects = [
     tech: 'React, Node.js, Express.js',
     img: '/work images/gesture file transfer.png',
     link: 'https://github.com/ARTiwary/Air-gesture-recognition',
+    liveLink: 'https://air-gesture-drop.netlify.app/',
     height: 'h-96'
   },
   { 
@@ -19,6 +20,7 @@ const projects = [
     tech: 'React, Tailwind', 
     img: '/work images/just divide.png', 
     link: 'https://github.com/ARTiwary/just-divide-game',
+    liveLink: 'https://artiwary-just-divide.netlify.app/',
     height: 'h-80' 
   },
   { 
@@ -27,6 +29,7 @@ const projects = [
     tech: 'Python, Tailwind, React.js, FastAPI, CNN Model, ResNet18, Jupyter Notebook', 
     img: '/work images/brain tumor detection.png', 
     link: 'https://github.com/ARTiwary/MRI-brain-tumour-detection-with-gesture-control-',
+    liveLink: 'https://brain-tumor-with-gesture.netlify.app/',
     height: 'h-[32rem]'
   },
   { 
@@ -53,7 +56,6 @@ const Works = () => {
   const galleryRef = useRef(null);
 
   useEffect(() => {
-
     gsap.fromTo(
       headerRef.current.children,
       { opacity: 0, y: 30 },
@@ -87,7 +89,6 @@ const Works = () => {
         }
       }
     );
-
   }, []);
 
   return (
@@ -96,7 +97,6 @@ const Works = () => {
       ref={sectionRef}
       className="relative w-full min-h-screen bg-[#050505] py-32 overflow-hidden"
     >
-
       {/* Background Particles */}
       <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-30 z-0" />
 
@@ -121,25 +121,14 @@ const Works = () => {
           ref={galleryRef}
           className="columns-1 md:columns-2 xl:columns-3 gap-8 space-y-8"
         >
-
           {projects.map((project) => {
-
-            const hasLink = project.link && project.link.trim() !== '';
-
             return (
               <div
                 key={project.id}
-                className={`project-card group relative break-inside-avoid rounded-3xl overflow-hidden cursor-pointer bg-white/5 border border-white/10 backdrop-blur-md ${project.height}`}
+                className={`project-card group relative break-inside-avoid rounded-3xl overflow-hidden bg-white/5 border border-white/10 backdrop-blur-md ${project.height}`}
               >
-
-                {/* IMAGE */}
-                <div
-                  onClick={() => {
-                    if (hasLink) window.open(project.link, '_blank');
-                  }}
-                  className="w-full h-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden relative"
-                >
-
+                {/* IMAGE CONTAINER */}
+                <div className="w-full h-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden relative">
                   <img
                     src={project.img}
                     alt={project.title}
@@ -147,37 +136,54 @@ const Works = () => {
                   />
 
                   {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-30">
+                    <div className="flex gap-3">
+                      {project.link && (
+                        <a 
+                          href={project.link} 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="text-white text-sm md:text-lg font-semibold bg-white/10 px-6 py-3 rounded-full backdrop-blur-md border border-white/20 hover:bg-white/20 transition-colors"
+                        >
+                          Code →
+                        </a>
+                      )}
+                      
+                      {project.liveLink && (
+                        <a 
+                          href={project.liveLink} 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="text-white text-sm md:text-lg font-semibold bg-emerald-500/20 px-6 py-3 rounded-full backdrop-blur-md border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
+                        >
+                          Live Demo 🚀
+                        </a>
+                      )}
 
-                    <div className="text-white text-sm md:text-lg font-semibold bg-white/10 px-6 py-3 rounded-full backdrop-blur-md border border-white/20">
-                      {hasLink ? 'Click to see project →' : 'No link available'}
+                      {!project.link && !project.liveLink && (
+                        <div className="text-white text-sm md:text-lg font-semibold bg-white/10 px-6 py-3 rounded-full backdrop-blur-md border border-white/20 opacity-50">
+                          No link available
+                        </div>
+                      )}
                     </div>
-
                   </div>
-
                 </div>
 
                 {/* PROJECT INFO */}
-                <div className="absolute bottom-0 left-0 w-full p-8 z-20">
-
+                <div className="absolute bottom-0 left-0 w-full p-8 z-20 pointer-events-none">
                   <span className="text-blue-400 text-xs uppercase tracking-[0.2em]">
                     {project.tech}
                   </span>
-
                   <h3 className="text-2xl md:text-3xl font-bold text-white mt-2">
                     {project.title}
                   </h3>
-
                 </div>
 
               </div>
             );
           })}
-
         </div>
-
       </div>
-
     </section>
   );
 };
