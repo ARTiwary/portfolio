@@ -104,7 +104,7 @@ const About = () => {
             {/* Projects */}
             <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10">
               <h3 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500 mb-2">
-                5+
+                6+
               </h3>
 
               <p className="text-sm text-gray-400 uppercase">

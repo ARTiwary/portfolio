@@ -12,7 +12,7 @@ const projects = [
     img: '/work images/gesture file transfer.png',
     link: 'https://github.com/ARTiwary/Air-gesture-recognition',
     liveLink: 'https://air-gesture-drop.netlify.app/',
-    height: 'h-96'
+    height: 'h-80'
   },
   { 
     id: 2, 
@@ -30,7 +30,7 @@ const projects = [
     img: '/work images/brain tumor detection.png', 
     link: 'https://github.com/ARTiwary/MRI-brain-tumour-detection-with-gesture-control-',
     liveLink: 'https://brain-tumor-with-gesture.netlify.app/',
-    height: 'h-[32rem]'
+    height: 'h-80'
   },
   { 
     id: 4, 
@@ -38,7 +38,7 @@ const projects = [
     tech: 'Python, Tailwind, React.js', 
     img: '/work images/Suraksha setu.png', 
     link: 'https://github.com/ARTiwary/compass-comfort-kit',
-    height: 'h-[32rem]'
+    height: 'h-80'
   },
   {
     id: 5,
@@ -46,7 +46,16 @@ const projects = [
     tech: 'Python, Tailwind, React.js, CNN Model, Jupyter Notebook, FastAPI',
     img: '/work images/Road accident.png',
     link: 'https://github.com/ARTiwary/Road_accident-_alert_system',
-    height: 'h-[42rem]'
+    height: 'h-80'
+  }, 
+  {
+    id: 6,
+    title: 'Smart Dinning Assistent',
+    tech: 'Next.Js, Tailwind, Node.Js, Express.Js, Groq + LangChain',
+    img: '/work images/Smart Dinning Assistent.png',
+    link: 'https://github.com/ARTiwary/smart-dinning-assistent',
+    liveLink: 'https://smart-dinning-assistent.vercel.app',
+    height: 'h-[40rem]'
   }
 ];
 
@@ -119,69 +128,51 @@ const Works = () => {
         {/* Gallery */}
         <div
           ref={galleryRef}
-          className="columns-1 md:columns-2 xl:columns-3 gap-8 space-y-8"
+         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {projects.map((project) => {
-            return (
-              <div
-                key={project.id}
-                className={`project-card group relative break-inside-avoid rounded-3xl overflow-hidden bg-white/5 border border-white/10 backdrop-blur-md ${project.height}`}
-              >
-                {/* IMAGE CONTAINER */}
-                <div className="w-full h-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden relative">
-                  <img
-                    src={project.img}
-                    alt={project.title}
-                    className="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-105"
-                  />
+          {projects.map((project) => (
+  <div
+    key={project.id}
+    // Perspective wrapper
+    className={`project-card group h-80 [perspective:1000px]`} 
+  >
+    {/* Flip Container */}
+    <div className="relative w-full h-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+      
+      {/* FRONT FACE: Image and Title */}
+      <div className="absolute inset-0 w-full h-full bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/10 [backface-visibility:hidden]">
+        <img
+          src={project.img}
+          alt={project.title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/80 to-transparent">
+          <h3 className="text-xl font-bold text-white">{project.title}</h3>
+        </div>
+      </div>
 
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-30">
-                    <div className="flex gap-3">
-                      {project.link && (
-                        <a 
-                          href={project.link} 
-                          target="_blank" 
-                          rel="noreferrer" 
-                          className="text-white text-sm md:text-lg font-semibold bg-white/10 px-6 py-3 rounded-full backdrop-blur-md border border-white/20 hover:bg-white/20 transition-colors"
-                        >
-                          Code →
-                        </a>
-                      )}
-                      
-                      {project.liveLink && (
-                        <a 
-                          href={project.liveLink} 
-                          target="_blank" 
-                          rel="noreferrer" 
-                          className="text-white text-sm md:text-lg font-semibold bg-emerald-500/20 px-6 py-3 rounded-full backdrop-blur-md border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
-                        >
-                          Live Demo 🚀
-                        </a>
-                      )}
-
-                      {!project.link && !project.liveLink && (
-                        <div className="text-white text-sm md:text-lg font-semibold bg-white/10 px-6 py-3 rounded-full backdrop-blur-md border border-white/20 opacity-50">
-                          No link available
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* PROJECT INFO */}
-                <div className="absolute bottom-0 left-0 w-full p-8 z-20 pointer-events-none">
-                  <span className="text-blue-400 text-xs uppercase tracking-[0.2em]">
-                    {project.tech}
-                  </span>
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mt-2">
-                    {project.title}
-                  </h3>
-                </div>
-
-              </div>
-            );
-          })}
+      {/* BACK FACE: Links and Tech */}
+      <div className="absolute inset-0 w-full h-full bg-neutral-900 rounded-3xl border border-white/10 p-8 flex flex-col items-center justify-center gap-4 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+        <h3 className="text-xl font-bold text-white text-center">{project.title}</h3>
+        <p className="text-xs text-blue-400 text-center px-4">{project.tech}</p>
+        
+        <div className="flex flex-col gap-3 w-full mt-4">
+          {project.link && (
+            <a href={project.link} target="_blank" rel="noreferrer" className="text-center text-white bg-white/10 py-3 rounded-full hover:bg-white/20 transition-all">
+              GitHub →
+            </a>
+          )}
+          {project.liveLink && (
+            <a href={project.liveLink} target="_blank" rel="noreferrer" className="text-center text-white bg-emerald-600 py-3 rounded-full hover:bg-emerald-500 transition-all">
+              Live Demo 🚀
+            </a>
+          )}
+        </div>
+      </div>
+      
+    </div>
+  </div>
+))}
         </div>
       </div>
     </section>
