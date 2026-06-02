@@ -10,6 +10,7 @@ export default function FrameScroll() {
   const text1Ref = useRef(null);
   const text2Ref = useRef(null);
   const text3Ref = useRef(null);
+  const popupRef = useRef(null); // Added for the popup
 
   // Generate sparse particle fields
   const particles = useMemo(() => {
@@ -94,6 +95,10 @@ export default function FrameScroll() {
 
     // Initial resets for texts
     gsap.set([text1Ref.current, text2Ref.current, text3Ref.current], { opacity: 0 });
+    gsap.set(popupRef.current, { opacity: 1 }); // Ensure popup starts visible
+
+    // Popup animation: Fade out immediately at start (0-2 frames)
+    tl.to(popupRef.current, { opacity: 0, duration: 2, ease: "power1.inOut" }, 0);
 
     /* 
       FRAME LOGIC MAP
@@ -105,7 +110,7 @@ export default function FrameScroll() {
       Frame 181-220: Text 2 fades out (181-200), "About Me" fades in (200-220).
       Frame 221-240: Text 3 stays visible.
     */
-
+   
     // --- Block 1: "I am Leeshark" ---
     // Fade in and slight float up (Frame 60-80 visible by 80)
     tl.fromTo(text1Ref.current, 
@@ -173,25 +178,30 @@ export default function FrameScroll() {
         {/* Video Frame Canvas */}
         <canvas
           ref={canvasRef}
-          className="w-full h-full block relative z-10 opacity-70" /* Dimmed slightly for text contrast */
+          className="w-full h-full block relative z-10 opacity-70"
         />
         
+        {/* Popup Message */}
+        <div ref={popupRef} className=" absolute inset-0 z-50 flex items-center justify-start pointer-events-none">
+          <div className="bg-[#050505]/60 backdrop-blur-md border border-white/10 px-8 py-6 rounded-3xl shadow-[0_0_30px_rgba(255,255,255,0.1)] text-center animate-pulse">
+            <h1 className="text-3xl font-bold text-white mb-2">Hii 👋 Welcome</h1>
+            <p className="text-gray-400 font-medium uppercase text-sm">Scroll down to see the magic</p>
+          </div>
+        </div>
+        
         {/* Text Area */}
-        <div className="absolute inset-0 flex flex-col  justify-center z-20 pointer-events-none text-white tracking-wide">
+        <div className="absolute inset-0 flex flex-col justify-center z-20 pointer-events-none text-white tracking-wide items-center text-center">
            <h1 ref={text1Ref} className="absolute text-5xl md:text-7xl font-sans font-bold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
              I am Ayush Raj Tiwary
            </h1>
-           <h2 ref={text2Ref} className="right-2 absolute text-6xl md:text-4xl font-sans font-bold text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] tracking-wider">
+           <h2 ref={text2Ref} className="absolute text-6xl md:text-4xl font-sans font-bold text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] tracking-wider">
              Full Stack Developer
            </h2>
            <h3 ref={text3Ref} className="absolute text-7xl md:text-[3rem] font-sans font-bold text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.6)] tracking-widest">
-             Let's Work Together to <br />
-              Create Wonders with Us
+             Let's Work Together to <br /> Create Wonders with Us
            </h3>
         </div>
       </div>
-      
-      
     </>
   );
 }
