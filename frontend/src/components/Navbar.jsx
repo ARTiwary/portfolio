@@ -26,6 +26,7 @@ const Navbar = () => {
             <a 
               key={link} 
               href={`#${link.toLowerCase()}`}
+              
               className="text-gray-200 font-sans font-medium text-base tracking-wide transition-all duration-300 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
             >
               {link}
