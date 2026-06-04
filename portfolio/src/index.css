@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  color: white;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@keyframes float-up {
+  0% { transform: translateY(110vh); opacity: 0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-10vh); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+  animation: float-up linear infinite;
+  box-shadow: 0 0 6px 1px rgba(255,255,255,0.4);
+}
+
+.perspective-1500 {
+  perspective: 1500px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
