@@ -1,9 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+function TypewriterText({ text, onDone }) {
+  const [displayed, setDisplayed] = useState('');
+  useEffect(() => {
+    setDisplayed('');
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) { clearInterval(interval); onDone && onDone(); }
+    }, 14);
+    return () => clearInterval(interval);
+  }, [text]);
+  return <span>{displayed}<span style={{ opacity: 0.7, animation: 'blink 1s infinite' }}>▌</span></span>;
+}
+
 export default function AIAgent() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: "Hi! I'm Ayush's digital twin. Ask me anything about his AI/ML models, Full-Stack projects, or tech stack!" }
+    { sender: 'bot', text: 'ORBIT ONLINE. Ask me anything about Ayush — projects, skills, or opportunities.', typed: true }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -11,156 +28,297 @@ export default function AIAgent() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
-
+    if (!input.trim() || loading) return;
     const userMessage = { sender: 'user', text: input };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
-
     try {
-      const response = await fetch('http://localhost:5000/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage.text,
-          history: messages.slice(1)
+          history: messages.slice(1).map(m => ({
+            role: m.sender === 'user' ? 'user' : 'assistant',
+            content: m.text,
+          })),
         }),
       });
-
       const data = await response.json();
       if (data.reply) {
-        setMessages((prev) => [...prev, { sender: 'bot', text: data.reply }]);
+        setMessages(prev => [...prev, { sender: 'bot', text: data.reply, typed: false }]);
       } else {
-        setMessages((prev) => [...prev, { sender: 'bot', text: "Something went wrong. Let's try again!" }]);
+        setMessages(prev => [...prev, { sender: 'bot', text: 'Signal lost. Try again.', typed: true }]);
       }
-    } catch (err) {
-      setMessages((prev) => [...prev, { sender: 'bot', text: "Can't connect to my brain right now. Try again later!" }]);
+    } catch {
+      setMessages(prev => [...prev, { sender: 'bot', text: 'Connection failed. Try again.', typed: true }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] font-sans text-white">
-      
-      {/* 🤖 Custom Floating Pill Button with Animated AI Agent Figure */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="flex items-center gap-3 px-5 py-3 rounded-full border border-white/20 bg-slate-900 text-white shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300 hover:scale-105 hover:bg-slate-800 hover:border-cyan-500/50 active:scale-95 group"
-        >
-          {/* AI Agent Figure Container */}
-          <div className="relative w-7 h-7 flex items-center justify-center rounded-lg bg-black/40 border border-white/10 overflow-hidden group-hover:border-cyan-500/30 transition-colors">
-            
-            {/* 💾 Animated Horizontal Core Scanner Matrix Line */}
-            <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent top-0 animate-[bounce_2s_infinite] opacity-60 pointer-events-none" />
+    <>
+      <style>{`
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes pulseGlow { 0%,100%{box-shadow:0 0 8px rgba(139,92,246,0.6)} 50%{box-shadow:0 0 20px rgba(139,92,246,1),0 0 40px rgba(59,130,246,0.4)} }
+        @keyframes dotBounce { 0%,100%{transform:translateY(0);opacity:0.4} 50%{transform:translateY(-5px);opacity:1} }
+        @keyframes scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        .orbit-msg { animation: fadeSlideUp 0.25s ease forwards; }
+        .orbit-input::placeholder { color: rgba(167,139,250,0.4); }
+        .orbit-input:focus { outline: none; }
+        .orbit-scroll::-webkit-scrollbar { width: 3px; }
+        .orbit-scroll::-webkit-scrollbar-track { background: transparent; }
+        .orbit-scroll::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.4); border-radius: 2px; }
+      `}</style>
 
-            {/* 🎭 Robo-Mask Structure Shape */}
-            <div className="w-4 h-4 rounded-md border-2 border-slate-400 flex items-center justify-center gap-[3px] bg-slate-950 p-[2px] group-hover:border-cyan-400 transition-colors">
-              {/* Left Eye (Blinking Animation) */}
-              <div className="w-1 h-1.5 rounded-sm bg-cyan-400 animate-[pulse_1.5s_infinite]" />
-              {/* Right Eye (Blinking Animation) */}
-              <div className="w-1 h-1.5 rounded-sm bg-cyan-400 animate-[pulse_1.5s_infinite]" />
+      <div style={{ position: 'fixed', bottom: '28px', right: '28px', zIndex: 9999 }}>
+
+        {/* Floating button */}
+        {!isOpen && (
+          <button
+            onClick={() => setIsOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '11px 22px', borderRadius: '50px',
+              background: 'rgba(10,8,20,0.85)',
+              border: '1px solid rgba(139,92,246,0.6)',
+              color: '#e2d9ff', cursor: 'pointer',
+              fontSize: '13px', fontWeight: '600',
+              letterSpacing: '1.5px', textTransform: 'uppercase',
+              backdropFilter: 'blur(16px)',
+              animation: 'pulseGlow 3s ease-in-out infinite',
+              transition: 'transform 0.2s',
+              fontFamily: 'inherit',
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            {/* Avatar icon */}
+            <div style={{
+              width: '28px', height: '28px', borderRadius: '50%',
+              background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '13px', flexShrink: 0,
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
             </div>
+            <span>Ayush Orbit</span>
+            {/* Live dot */}
+            <span style={{
+              width: '7px', height: '7px', borderRadius: '50%',
+              background: '#22d3ee', display: 'inline-block',
+              boxShadow: '0 0 8px #22d3ee',
+              animation: 'blink 2s infinite',
+            }} />
+          </button>
+        )}
 
-            {/* Micro Audio Waveform Dots on Bottom of Figure */}
-            <div className="absolute bottom-1 flex items-end gap-[2px] h-[4px]">
-              <div className="w-[1.5px] bg-cyan-400/60 animate-[pulse_0.8s_infinite]" style={{ height: '60%' }} />
-              <div className="w-[1.5px] bg-cyan-400 animate-[pulse_0.5s_infinite]" style={{ height: '100%' }} />
-              <div className="w-[1.5px] bg-cyan-400/60 animate-[pulse_0.7s_infinite]" style={{ height: '40%' }} />
-            </div>
-          </div>
+        {/* Chat window */}
+        {isOpen && (
+          <div style={{
+            width: '370px', height: '520px',
+            display: 'flex', flexDirection: 'column',
+            background: 'rgba(6,5,18,0.92)',
+            border: '1px solid rgba(139,92,246,0.35)',
+            borderRadius: '16px', overflow: 'hidden',
+            backdropFilter: 'blur(24px)',
+            boxShadow: '0 0 0 1px rgba(59,130,246,0.1), 0 24px 60px rgba(0,0,0,0.7), 0 0 40px rgba(139,92,246,0.15)',
+            animation: 'fadeSlideUp 0.2s ease forwards',
+          }}>
 
-          {/* Text Identifier Label */}
-          <span className="text-sm font-semibold tracking-wide text-gray-200 group-hover:text-cyan-400 transition-colors">
-            Ayush Orbit
-          </span>
-        </button>
-      )}
-
-      {/* 🔮 Ultra-Transparent Glassmorphic Chat Window */}
-      {isOpen && (
-        <div className="flex h-[480px] w-[360px] flex-col rounded-2xl border border-white/10 bg-slate-950/75 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] overflow-hidden transition-all duration-200">
-          
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/40">
-            <div className="flex items-center gap-3">
-              {/* Miniature Operating Avatar on Header */}
-              <div className="relative w-6 h-6 flex items-center justify-center rounded-md bg-black/40 border border-cyan-500/20 overflow-hidden">
-                <div className="absolute inset-x-0 h-[1.5px] bg-cyan-400 top-0 animate-[bounce_1.5s_infinite] opacity-40" />
-                <div className="w-3 h-3 rounded-sm border border-cyan-400 flex items-center justify-center gap-[2px] bg-slate-950">
-                  <div className="w-[1.5px] h-1 bg-cyan-400" />
-                  <div className="w-[1.5px] h-1 bg-cyan-400" />
+            {/* Header */}
+            <div style={{
+              padding: '14px 16px',
+              borderBottom: '1px solid rgba(139,92,246,0.2)',
+              background: 'rgba(139,92,246,0.06)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              flexShrink: 0,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '34px', height: '34px', borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 0 12px rgba(139,92,246,0.5)',
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                  </svg>
+                </div>
+                <div>
+                  <div style={{ color: '#e2d9ff', fontSize: '13px', fontWeight: '700', letterSpacing: '0.5px' }}>
+                    Ayush Orbit
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22d3ee', display: 'inline-block', boxShadow: '0 0 6px #22d3ee' }} />
+                    <span style={{ color: '#22d3ee', fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: '600' }}>Online</span>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm tracking-wide text-white">Ayush Orbit</h3>
-                <span className="text-[10px] text-cyan-400 tracking-wider uppercase font-bold">Ask Anything</span>
-              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                style={{
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.5)', width: '28px', height: '28px',
+                  borderRadius: '50%', cursor: 'pointer', fontSize: '13px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s', fontFamily: 'inherit',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.color = '#f87171'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+              >✕</button>
             </div>
-            <button 
-              onClick={() => setIsOpen(false)} 
-              className="h-7 w-7 flex items-center justify-center rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-all text-xs"
-            >
-              ✕
-            </button>
-          </div>
 
-          {/* Messages Panel */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10 bg-black/20">
-            {messages.map((msg, index) => (
-              <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div
-                  className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-xs font-normal leading-relaxed shadow-md ${
-                    msg.sender === 'user'
-                      ? 'bg-cyan-600 text-white rounded-br-none border border-cyan-500 shadow-cyan-950/50'
-                      : 'bg-slate-900/90 text-gray-100 border border-white/10 rounded-bl-none shadow-black/40'
-                  }`}
-                  style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.4)' }}
+            {/* Messages */}
+            <div className="orbit-scroll" style={{
+              flex: 1, overflowY: 'auto', padding: '16px 14px',
+              display: 'flex', flexDirection: 'column', gap: '12px',
+            }}>
+              {messages.map((msg, i) => (
+                <div key={i} className="orbit-msg" style={{
+                  display: 'flex',
+                  justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                  gap: '8px', alignItems: 'flex-end',
+                }}>
+                  {/* Bot avatar */}
+                  {msg.sender === 'bot' && (
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0,
+                      background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginBottom: '2px',
+                    }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                      </svg>
+                    </div>
+                  )}
+
+                  <div style={{
+                    maxWidth: '78%', fontSize: '13px', lineHeight: '1.65',
+                    padding: '10px 14px', borderRadius: msg.sender === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                    ...(msg.sender === 'user' ? {
+                      background: 'linear-gradient(135deg, rgba(139,92,246,0.3), rgba(59,130,246,0.25))',
+                      border: '1px solid rgba(139,92,246,0.4)',
+                      color: '#e2d9ff',
+                    } : {
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      color: '#d1d5db',
+                    })
+                  }}>
+                    {msg.sender === 'bot' && !msg.typed ? (
+                      <TypewriterText text={msg.text} onDone={() => {
+                        setMessages(prev => prev.map((m, idx) => idx === i ? { ...m, typed: true } : m));
+                      }} />
+                    ) : msg.text}
+                  </div>
+
+                  {/* User avatar */}
+                  {msg.sender === 'user' && (
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0,
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '10px', color: '#a78bfa', marginBottom: '2px',
+                    }}>U</div>
+                  )}
+                </div>
+              ))}
+
+              {/* Loading dots */}
+              {loading && (
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
+                  <div style={{
+                    width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0,
+                    background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                    </svg>
+                  </div>
+                  <div style={{
+                    padding: '12px 16px', background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px 14px 14px 4px',
+                    display: 'flex', gap: '5px', alignItems: 'center',
+                  }}>
+                    {[0,1,2].map(i => (
+                      <span key={i} style={{
+                        width: '7px', height: '7px', borderRadius: '50%',
+                        background: '#8b5cf6', display: 'inline-block',
+                        animation: `dotBounce 1.2s ${i * 0.2}s infinite`,
+                      }} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: '1px', background: 'rgba(139,92,246,0.15)', flexShrink: 0 }} />
+
+            {/* Input area */}
+            <div style={{
+              padding: '12px 14px', background: 'rgba(139,92,246,0.04)', flexShrink: 0,
+            }}>
+              <form onSubmit={handleSendMessage} style={{
+                display: 'flex', gap: '8px', alignItems: 'center',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(139,92,246,0.25)',
+                borderRadius: '50px', padding: '8px 8px 8px 16px',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.6)'}
+              onBlur={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.25)'}
+              >
+                <input
+                  className="orbit-input"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  placeholder="Ask me anything..."
+                  style={{
+                    flex: 1, background: 'transparent', border: 'none',
+                    color: '#e2d9ff', fontSize: '13px',
+                    fontFamily: 'inherit', letterSpacing: '0.2px',
+                  }}
+                />
+                <button type="submit" disabled={loading} style={{
+                  width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
+                  background: loading ? 'rgba(139,92,246,0.3)' : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                  border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s', boxShadow: loading ? 'none' : '0 0 12px rgba(139,92,246,0.5)',
+                }}
+                onMouseEnter={e => { if (!loading) e.currentTarget.style.transform = 'scale(1.08)'; }}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                  {msg.text}
-                </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                </button>
+              </form>
+              <div style={{ textAlign: 'center', marginTop: '8px' }}>
+                <span style={{ color: 'rgba(139,92,246,0.4)', fontSize: '10px', letterSpacing: '1px' }}>
+                  POWERED BY AYUSH ORBIT AI
+                </span>
               </div>
-            ))}
-            
-            {/* Loading Indicator */}
-            {loading && (
-              <div className="flex justify-start">
-                <div className="bg-slate-900/90 border border-white/10 rounded-xl rounded-bl-none px-3.5 py-2.5 text-xs text-gray-400 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                </div>
-              </div>
-            )}
-            <div ref={chatEndRef} />
+            </div>
+
           </div>
-
-          {/* Input Form Box */}
-          <form onSubmit={handleSendMessage} className="p-3 border-t border-white/10 bg-slate-950 flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me a question..."
-              className="flex-1 bg-white/[0.05] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:bg-white/[0.08] transition-all"
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 disabled:opacity-40 text-white px-4 rounded-xl text-xs font-semibold tracking-wide transition-all shadow-md"
-            >
-              Send
-            </button>
-          </form>
-
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
