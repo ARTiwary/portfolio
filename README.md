@@ -80,15 +80,6 @@ Real-time gesture-controlled image transfer across browser tabs using a touchles
 
 ---
 
-## Hackathons & Recognition
-
-| Event | Role | Achievement |
-|-------|------|-------------|
-| Smart India Hackathon 2025 | Full-Stack Developer | National level — Tourist safety platform with real-time alerts |
-| Google Gen AI Exchange 2025 | AI Developer | Built AI-powered mental health conversational assistant |
-| H2Skills — Ranchi Hackers | Participant | Cleared screening round |
-
----
 
 ## Portfolio Features
 
