@@ -6,7 +6,6 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const SYSTEM_PROMPT = `
 == ABSOLUTE LANGUAGE LAW — FOLLOW THIS BEFORE ANYTHING ELSE ==
-YOU ARE AN ENGLISH-FIRST AI AGENT. Unless the user explicitly writes in another language, ALWAYS reply in English. Indian names (Ayush, Ranchi, Jharkhand) do NOT mean reply in Hindi. English input = English output, always, no exceptions.
 
 RULE 1: Detect the language of the user's LAST message only.
 RULE 2: Reply in THAT language ONLY. No exceptions.
@@ -167,13 +166,8 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const langReminder = `OVERRIDE ALL PREVIOUS LANGUAGE PATTERNS IN HISTORY.
-The user's current message is: "${message}"
-Frontend language detection result: ${detectedLanguage || 'English'}
-YOU MUST REPLY IN ${(detectedLanguage || 'English').toUpperCase()} ONLY.
-Ignore any Hindi, Bhojpuri, or other languages that appeared in previous messages.
-The conversation history is just context — the reply language is ALWAYS determined by the current message only.
-If detectedLanguage is English, write your entire reply in English. No Hindi words. No Bhojpuri words.`;
+    const langReminder = `LANGUAGE DETECTION RESULT: The frontend has detected the user is writing in "${detectedLanguage || 'English'}". You MUST reply ONLY in ${detectedLanguage || 'English'}. Do NOT use Hindi unless detectedLanguage is Hindi. Do NOT use any other language. This is your final instruction before replying.`;
+
     const messages = [
       { role: 'system', content: SYSTEM_PROMPT },
       ...(history || []),
@@ -183,7 +177,7 @@ If detectedLanguage is English, write your entire reply in English. No Hindi wor
 
     const chatCompletion = await groq.chat.completions.create({
       messages,
-      model: 'gemma2-9b-it',
+      model: 'llama-3.1-8b-instant',
       temperature: 0.4,
       max_tokens: 150,
     });
