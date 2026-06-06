@@ -6,6 +6,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const SYSTEM_PROMPT = `
 == ABSOLUTE LANGUAGE LAW — FOLLOW THIS BEFORE ANYTHING ELSE ==
+YOU ARE AN ENGLISH-FIRST AI AGENT. Unless the user explicitly writes in another language, ALWAYS reply in English. Indian names (Ayush, Ranchi, Jharkhand) do NOT mean reply in Hindi. English input = English output, always, no exceptions.
 
 RULE 1: Detect the language of the user's LAST message only.
 RULE 2: Reply in THAT language ONLY. No exceptions.
@@ -159,15 +160,20 @@ Email: ayushrajtiwary07@gmail.com
 `;
 
 router.post('/', async (req, res) => {
-  const { message, history } = req.body;
+  const { message, history, detectedLanguage } = req.body;
 
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
   try {
-    const langReminder = `CRITICAL: The user wrote this message in a specific language: "${message}". You MUST detect that language and reply in THAT EXACT language. If it looks like English, reply in English. If it looks like Bhojpuri (ba, tohar, bhaiya etc), reply in Bhojpuri. NEVER default to Hindi unless the user wrote in Hindi.`;
-
+    const langReminder = `OVERRIDE ALL PREVIOUS LANGUAGE PATTERNS IN HISTORY.
+The user's current message is: "${message}"
+Frontend language detection result: ${detectedLanguage || 'English'}
+YOU MUST REPLY IN ${(detectedLanguage || 'English').toUpperCase()} ONLY.
+Ignore any Hindi, Bhojpuri, or other languages that appeared in previous messages.
+The conversation history is just context — the reply language is ALWAYS determined by the current message only.
+If detectedLanguage is English, write your entire reply in English. No Hindi words. No Bhojpuri words.`;
     const messages = [
       { role: 'system', content: SYSTEM_PROMPT },
       ...(history || []),
@@ -177,7 +183,7 @@ router.post('/', async (req, res) => {
 
     const chatCompletion = await groq.chat.completions.create({
       messages,
-      model: 'llama-3.1-8b-instant',
+      model: 'gemma2-9b-it',
       temperature: 0.4,
       max_tokens: 150,
     });
