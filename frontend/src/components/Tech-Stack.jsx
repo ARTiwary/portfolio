@@ -1,11 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { span } from 'framer-motion/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const services = [
+const TECH_STACK = [
   { 
     id: '01', 
     title: 'AI & Computer Vision', 
@@ -38,15 +37,13 @@ const services = [
   },
 ];
 
-const Services = () => {
+const Tech_Stack = () => {
   const containerRef = useRef(null);
   const cardsRef = useRef([]);
 
   useEffect(() => {
-    // Media query check for X translation distance
     const getAsideTranslation = () => (window.innerWidth > 768 ? -600 : -300);
 
-    // Initial 3D placements: Set all 5 cards in their deep-Z stack
     cardsRef.current.forEach((card, i) => {
       if (!card) return;
       gsap.set(card, { 
@@ -63,14 +60,12 @@ const Services = () => {
         pin: true,
         scrub: 1.5,
         start: 'top top',
-        end: '+=5000', // Expanded for 5 cards
+        end: '+=5000',
       }
     });
 
-    // Create transitions for each card (0 to 3)
-    services.forEach((_, step) => {
-      if (step < services.length - 1) {
-        // 1. Current card exits
+    TECH_STACK.forEach((_, step) => {
+      if (step < TECH_STACK.length - 1) {
         tl.to(cardsRef.current[step], {
           z: 500,
           x: getAsideTranslation(),
@@ -81,8 +76,7 @@ const Services = () => {
           ease: 'power2.inOut'
         }, `step${step}`);
 
-        // 2. Shift remaining cards forward
-        for (let j = step + 1; j < services.length; j++) {
+        for (let j = step + 1; j < TECH_STACK.length; j++) {
           const newIndex = j - step - 1;
           tl.to(cardsRef.current[j], {
             z: -1000 * newIndex,
@@ -101,7 +95,7 @@ const Services = () => {
 
   return (
     <section 
-      id="services" 
+     id="tech-stack"
       ref={containerRef} 
       className="relative w-full h-screen bg-[#050505] perspective-1500 overflow-hidden flex flex-col pt-32 lg:pt-40"
     >
@@ -117,28 +111,31 @@ const Services = () => {
 
       {/* 3D Cards Container */}
       <div className="relative w-full h-[80vh] flex items-center justify-center transform-style-3d mt-10">
-        {services.map((service, index) => (
+        {TECH_STACK.map((item, index) => (
           <div
-            key={service.id}
+            key={item.id}
             ref={(el) => (cardsRef.current[index] = el)}
             className="absolute flex flex-col justify-start w-[85vw] max-w-[450px] p-8 md:p-12 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-2xl shadow-[0_0_50px_rgba(59,130,246,0.1)] transform-style-3d will-change-transform"
           >
             <div className="absolute top-6 right-8 text-white/10 font-black text-7xl font-sans tracking-tighter mix-blend-screen select-none">
-              {service.id}
+              {item.id}
             </div>
 
             <div className="relative z-10 mt-12">
               <h3 className="text-3xl font-bold text-white mb-4 tracking-wide drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]">
-                {service.title}
+                {item.title}
               </h3>
-              <p className="text-gray-300 font-light text-base md:text-lg leading-relaxed">
-                {service.desc}
+              <p className="text-gray-300 font-light text-base md:text-lg leading-relaxed mb-6">
+                {item.desc}
               </p>
               <div className="flex flex-wrap gap-2">
-                {service.tech.map((t)=>(
-                  <span key = {t}
-                  className="px-3 py-1 bg-blue-500/10 border-blue-500/10 text-blue-300 text-xs rounded-full font-medium"
-                  >{t}</span>
+                {item.tech.map((t) => (
+                  <span 
+                    key={t}
+                    className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs rounded-full font-medium"
+                  >
+                    {t}
+                  </span>
                 ))}
               </div>
             </div>
@@ -151,4 +148,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default Tech_Stack;

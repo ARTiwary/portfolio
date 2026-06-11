@@ -3,7 +3,7 @@ import Navbar from './components/Navbar'
 import FrameScroll from './components/FrameScroll'
 import About from './components/About'
 import Works from './components/Works'
-import Services from './components/Services'
+import Tech_Stack from './components/Tech-Stack';
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import React from 'react';
@@ -15,7 +15,7 @@ function App() {
       <Navbar />
       <FrameScroll />
       <About />
-      <Services />
+      <Tech_Stack />
       <Works />
       <Contact />
       <Footer />

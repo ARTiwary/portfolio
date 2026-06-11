@@ -22,7 +22,7 @@ const Navbar = () => {
 
         {/* Center: Navigation Links */}
         <div className="hidden md:flex flex-1 items-center justify-center space-x-8">
-          {['Home', 'About', 'Works', 'Services', 'Contact'].map((link) => (
+          {['Home', 'About', 'Works', 'Tech-Stack', 'Contact'].map((link) => (
             <a 
               key={link} 
               href={`#${link.toLowerCase()}`}
