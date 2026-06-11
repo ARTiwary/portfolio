@@ -184,22 +184,24 @@ export default function FrameScroll() {
         {/* Popup Message */}
         <div ref={popupRef} className=" absolute inset-0 z-50 flex items-center justify-start pointer-events-none">
           <div className="bg-[#050505]/60 backdrop-blur-md border border-white/10 px-8 py-6 rounded-3xl shadow-[0_0_30px_rgba(255,255,255,0.1)] text-center animate-pulse">
-            <h1 className="text-3xl font-bold text-white mb-2">Hii 👋 Welcome</h1>
-            <p className="text-gray-400 font-medium uppercase text-sm">Scroll down to see the magic</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Ayush Raj Tiwary</h1>
+            <p className="text-gray-400 font-medium uppercase text-sm">Scroll to explore</p>
           </div>
         </div>
         
         {/* Text Area */}
-        <div className="absolute inset-0 flex flex-col justify-center z-20 pointer-events-none text-white tracking-wide items-center text-center">
-           <h1 ref={text1Ref} className="absolute text-5xl md:text-7xl font-sans font-bold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-             I am Ayush Raj Tiwary
-           </h1>
-           <h2 ref={text2Ref} className="absolute text-6xl md:text-4xl font-sans font-bold text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] tracking-wider">
-             Full Stack Developer
-           </h2>
-           <h3 ref={text3Ref} className="absolute text-7xl md:text-[3rem] font-sans font-bold text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.6)] tracking-widest">
-             Let's Work Together to <br /> Create Wonders with Us
-           </h3>
+        <div className="absolute inset-0 flex flex-col justify-center z-20 pointer-events-none text-white tracking-wide px-10 md:px-20">
+          <h1 ref={text1Ref} className="absolute self-start text-left text-5xl md:text-7xl font-sans font-black drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            I am Ayush <br /> Raj Tiwary
+          </h1>
+          
+          <h2 ref={text2Ref} className="absolute self-end text-right text-4xl md:text-6xl font-sans font-bold drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] tracking-wider">
+            AI/ML Engineer & <br /> Full Stack Developer
+          </h2>
+           <h3 ref={text3Ref} className="absolute self-center text-center text-3xl md:text-[3rem] font-sans font-bold drop-shadow-[0_0_25px_rgba(255,255,255,0.6)] tracking-widest">
+    Let's Build Something That Matters<br /> 
+    <span className="text-blue-400">Open to Work — Let's Connect</span>
+  </h3>
         </div>
       </div>
     </>

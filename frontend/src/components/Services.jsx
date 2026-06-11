@@ -1,15 +1,41 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { span } from 'framer-motion/client';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const services = [
-  { id: '01', title: 'Web Development', desc: 'Crafting responsive, high-performance web applications using modern frameworks and robust logic.' },
-  { id: '02', title: 'Full Stack Solutions', desc: 'End-to-end architecture handling scalable databases, secure APIs, and seamless integrations.' },
-  { id: '03', title: 'UI/UX Design', desc: 'Designing ultra-minimal, intuitive, and premium interfaces with millimeter-perfect precision.' },
-  { id: '04', title: 'AI Integration', desc: 'Deploying next-gen algorithms and machine learning pipelines right into the application layer.' },
-  { id: '05', title: 'Machine Learning', desc: 'Developing and deploying custom machine learning models to extract actionable insights and automate complex decision-making processes.' },
+  { 
+    id: '01', 
+    title: 'AI & Computer Vision', 
+    desc: 'Designing computer vision models for image classification and real-time object detection.', 
+    tech: ['Python', 'PyTorch', 'TensorFlow', 'OpenCV', 'Scikit-learn'] 
+  },
+  { 
+    id: '02', 
+    title: 'Generative AI Systems', 
+    desc: 'Building autonomous AI agents with RAG architectures and vector-based retrieval.', 
+    tech: ['Vector Databases', 'ChromaDB', 'LLM Orchestration', 'NLP', 'Data Pipelines'] 
+  },
+  { 
+    id: '03', 
+    title: 'Full-Stack Architecture', 
+    desc: 'Engineering scalable, high-concurrency web systems from client to server.', 
+    tech: ['Next.js', 'React.js', 'Node.js', 'PostgreSQL', 'RESTful APIs'] 
+  },
+  { 
+    id: '04', 
+    title: 'Infrastructure & DevOps', 
+    desc: 'Managing deployment lifecycles with containerization and automated CI/CD workflows.', 
+    tech: ['Docker', 'Linux', 'Vercel', 'Git', 'Cloud Deployment'] 
+  },
+  { 
+    id: '05', 
+    title: 'Software Engineering', 
+    desc: 'Optimizing performance through data structures, algorithms, and modular design.', 
+    tech: ['Java', 'C++', 'System Design', 'Algorithms', 'OOP'] 
+  },
 ];
 
 const Services = () => {
@@ -83,9 +109,9 @@ const Services = () => {
       <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-20 bg-gradient-to-b from-blue-900/10 via-transparent to-purple-900/10"></div>
       
       <div className="absolute top-8 md:top-16 left-6 md:left-12 z-50">
-        <p className="text-blue-400 font-sans font-bold tracking-[0.3em] uppercase text-xs mb-2">Capabilities</p>
+        <p className="text-blue-400 font-sans font-bold tracking-[0.3em] uppercase text-xs mb-2">My Core Expertise & Stack</p>
         <h2 className="text-4xl md:text-5xl font-black text-white tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-          Services
+          Technical Capabilities
         </h2>
       </div>
 
@@ -108,6 +134,13 @@ const Services = () => {
               <p className="text-gray-300 font-light text-base md:text-lg leading-relaxed">
                 {service.desc}
               </p>
+              <div className="flex flex-wrap gap-2">
+                {service.tech.map((t)=>(
+                  <span key = {t}
+                  className="px-3 py-1 bg-blue-500/10 border-blue-500/10 text-blue-300 text-xs rounded-full font-medium"
+                  >{t}</span>
+                ))}
+              </div>
             </div>
 
             <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/50 via-purple-500/50 to-transparent"></div>
