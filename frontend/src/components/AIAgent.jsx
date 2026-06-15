@@ -157,8 +157,16 @@ export default function AIAgent() {
         .orbit-quick:hover{background:rgba(139,92,246,0.22)!important;border-color:rgba(139,92,246,0.55)!important;transform:translateY(-1px);color:#e2d9ff!important}
       `}</style>
 
-      <div style={{ position:'fixed', bottom:'28px', right:'28px', zIndex:9999, display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'12px' }}>
-
+      <div style={{ 
+  position:'fixed', 
+  bottom:'130px', // Increased from '28px' to move it higher above the footer
+  right:'28px', 
+  zIndex:9999, 
+  display:'flex', 
+  flexDirection:'column', 
+  alignItems:'flex-end', 
+  gap:'12px' 
+}}>
         {/* ── ICON ── */}
         {phase === 'icon' && (
           <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'10px' }}>

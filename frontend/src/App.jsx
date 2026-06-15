@@ -13,14 +13,15 @@ function App() {
   return (
     <main className="relative bg-[#000000]">
       <Navbar />
-      <FrameScroll />
-      <About />
-      <Tech_Stack />
-      <Works />
-      <Contact />
-      <Footer />
       
-      {/* 🤖 Floating Custom AI Agent Widget */}
+      {/* Assign IDs that match your Navbar hrefs */}
+      <div id="hero"><FrameScroll /></div>
+      <div id="about"><About /></div>
+      <div id="tech-stack"><Tech_Stack /></div>
+      <div id="works"><Works /></div>
+      <div id="contact"><Contact /></div>
+      
+      <Footer />
       <AIAgent />
     </main>
   )
