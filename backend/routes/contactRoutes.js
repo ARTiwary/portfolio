@@ -6,11 +6,12 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS, // MUST be a 16-char App Password
+    pass: process.env.GMAIL_PASS.replace(/\s+/g, ''), // Removes spaces from your 16-char App Password
   },
-  // ADD THIS to prevent the server from hanging on network issues
-  connectionTimeout: 5000, 
-  greetingTimeout: 5000,
+  // Added timeouts to prevent the server from hanging
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
 
 router.post('/', async (req, res) => {
@@ -22,40 +23,39 @@ router.post('/', async (req, res) => {
 
     // 1. Save to MongoDB
     const newContact = new Contact({ name, email, message });
-    await newContact.save();
+    await newContact.save(); //[cite: 1, 3]
 
-    // 2. Fire and forget emails (Don't 'await' them to avoid frontend delay)
-    // We wrap them in their own async execution so they don't block the response
+    // 2. Trigger emails in the background (do not 'await' these)
     const sendEmails = async () => {
       try {
         // Email to You
         await transporter.sendMail({
-          from: `"${name}" <${process.env.GMAIL_USER}>`,
+          from: process.env.GMAIL_USER,
           to: process.env.GMAIL_USER,
           subject: `New Portfolio Inquiry: ${name}`,
-          text: `From: ${name} (${email})\n\nMessage: ${message}`
+          text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
         });
-        
+
         // Auto-reply to User
         await transporter.sendMail({
-          from: `"Ayush Raj Tiwary" <${process.env.GMAIL_USER}>`,
+          from: process.env.GMAIL_USER,
           to: email,
           subject: "Thanks for reaching out!",
-          html: `<p>Hi ${name}, I've received your message!</p>`
+          html: `<p>Hi ${name}, I have received your message and will get back to you soon.</p>`
         });
       } catch (err) {
-        console.error('Email background task failed:', err);
+        console.error('Background email task failed:', err);
       }
     };
 
-    sendEmails(); // Run in background
+    sendEmails(); 
 
-    // 3. Respond to frontend immediately after DB save
+    // 3. Respond immediately to the frontend
     res.status(201).json({ success: true, message: 'Message sent successfully!' });
 
   } catch (err) {
     console.error('Database error:', err);
-    res.status(500).json({ error: 'Internal server error.' });
+    res.status(500).json({ error: 'Server error, please try again.' });
   }
 });
 
