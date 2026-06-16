@@ -1,6 +1,6 @@
-// MUST BE AT THE VERY TOP: Force IPv4 to resolve SMTP/Network connection issues
+// MUST BE AT THE VERY TOP
 const dns = require("node:dns");
-dns.setDefaultResultOrder("ipv4first");
+dns.setDefaultResultOrder("ipv4first"); // Fixes network connectivity issues[cite: 2]
 
 require('dotenv').config();
 const express = require('express');
@@ -10,14 +10,13 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 
 // --- DEBUG: Verify ENV variables ---
-// Note: Ensure these are set in the Render "Environment" tab
-const requiredEnv = ['MONGODB_URI', 'GMAIL_USER', 'GMAIL_PASS'];
+// We now check for RESEND_API_KEY instead of GMAIL
+const requiredEnv = ['MONGODB_URI', 'RESEND_API_KEY'];
 const missingEnv = requiredEnv.filter(key => !process.env[key]);
 
 if (missingEnv.length > 0) {
   console.error(`CRITICAL: Missing environment variables: ${missingEnv.join(', ')}`);
 }
-
 const app = express();
 app.set('trust proxy', 1);
 
