@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-// 1. Trust proxy: Required for correct IP detection behind Render's load balancer
+// 1. Trust proxy: Essential for Render/Heroku/Fly.io environments
 app.set('trust proxy', 1);
 
 // 2. Security Middleware
@@ -19,22 +19,20 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10kb' }));
 
-// 3. Rate Limiting: Applied after trust proxy
+// 3. Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,               // Limit each IP to 100 requests per window
-  standardHeaders: true,  // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false,   // Disable the `X-RateLimit-*` headers
-  validate: { xForwardedForHeader: false }
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false
 });
 
-// Apply to all API routes
 app.use('/api/', limiter);
 
 // 4. Database Connection
 mongoose.connect(process.env.MONGODB_URI, {
   serverSelectionTimeoutMS: 10000,
-  family: 4 // Force IPv4 to avoid common DNS issues in containerized environments
+  family: 4 // Force IPv4
 })
 .then(() => console.log('Connected to MongoDB successfully!'))
 .catch(err => {
