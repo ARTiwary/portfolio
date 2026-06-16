@@ -1,3 +1,7 @@
+// MUST BE AT THE VERY TOP
+const dns = require("node:dns/promises");
+dns.setServers(["8.8.8.8", "1.1.1.1"]); 
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -6,21 +10,17 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 
 const app = express();
-
 app.set('trust proxy', 1);
-app.use(helmet());
 
-// CORS - Add your production frontend URL here
+app.use(helmet());
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000', 'https://artiwary.vercel.app'],
   methods: ['GET', 'POST'],
   credentials: true
 }));
-
 app.use(express.json({ limit: '10kb' }));
 
-// --- DATABASE CONNECTION ---
-// Ensure MONGODB_URI is set in your environment variables
+// --- Database Connection ---
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB successfully!'))
   .catch(err => console.error('Critical DB Connection Error:', err.message));
@@ -29,13 +29,9 @@ mongoose.connect(process.env.MONGODB_URI)
 app.get('/', (req, res) => res.status(200).json({ status: 'API is running' }));
 
 // Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-});
-app.use('/api/', limiter);
+app.use('/api/', rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
-// Routes
+// Routes (Imports the router, which imports the model)
 app.use('/api/contact', require('./routes/contactRoutes'));
 
 // Global Error Handler
