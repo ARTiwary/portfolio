@@ -9,6 +9,7 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // --- Security Middleware ---
 app.use(helmet());
@@ -23,6 +24,7 @@ app.use(express.json({ limit: '10kb' }));
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100
+  validate: { xForwardedForHeader: false }
 });
 app.use('/api/', limiter);
 
