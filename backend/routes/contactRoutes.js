@@ -1,61 +1,56 @@
 const router = require('express').Router();
 const Contact = require('../models/Contact');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS.replace(/\s+/g, ''), // Removes spaces from your 16-char App Password
-  },
-  // Added timeouts to prevent the server from hanging
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+// Initialize Resend with the key from your Render Environment variables
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.post('/', async (req, res) => {
   try {
     const { name, email, message } = req.body;
+
+    // 1. Validation
     if (!name || !email || !message) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
 
-    // 1. Save to MongoDB
+    // 2. Save to MongoDB
     const newContact = new Contact({ name, email, message });
-    await newContact.save(); //[cite: 1, 3]
+    await newContact.save();
 
-    // 2. Trigger emails in the background (do not 'await' these)
-    const sendEmails = async () => {
-      try {
-        // Email to You
-        await transporter.sendMail({
-          from: process.env.GMAIL_USER,
-          to: process.env.GMAIL_USER,
-          subject: `New Portfolio Inquiry: ${name}`,
-          text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
-        });
+    // 3. Send Email Notifications via Resend (HTTP API)
+    // We initiate these requests but don't 'await' them to keep the response fast.
+    
+    // Email to you
+    resend.emails.send({
+      from: 'onboarding@resend.dev', // Default sender, can be customized later
+      to: process.env.GMAIL_USER,    // Your email address
+      subject: `New Portfolio Inquiry: ${name}`,
+      text: `From: ${name} (${email})\n\nMessage: ${message}`
+    }).catch(err => console.error('Resend Admin Email Failed:', err));
 
-        // Auto-reply to User
-        await transporter.sendMail({
-          from: process.env.GMAIL_USER,
-          to: email,
-          subject: "Thanks for reaching out!",
-          html: `<p>Hi ${name}, I have received your message and will get back to you soon.</p>`
-        });
-      } catch (err) {
-        console.error('Background email task failed:', err);
-      }
-    };
+    // Auto-reply to the user
+    resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to: email,
+      subject: "Thanks for reaching out!",
+      html: `
+        <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+          <h2>Hi ${name},</h2>
+          <p>Thanks for visiting my portfolio and reaching out!</p>
+          <p>I have received your message and will get back to you as soon as possible.</p>
+          <br>
+          <p>Best regards,<br><strong>Ayush Raj Tiwary</strong></p>
+        </div>
+      `
+    }).catch(err => console.error('Resend Auto-reply Failed:', err));
 
-    sendEmails(); 
-
-    // 3. Respond immediately to the frontend
+    // 4. Send success response
     res.status(201).json({ success: true, message: 'Message sent successfully!' });
 
   } catch (err) {
-    console.error('Database error:', err);
-    res.status(500).json({ error: 'Server error, please try again.' });
+    console.error('Database/Server error:', err);
+    res.status(500).json({ error: 'Internal server error.' });
   }
 });
 
