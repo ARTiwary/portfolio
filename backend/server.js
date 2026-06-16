@@ -7,28 +7,26 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-// 1. Trust proxy for Render/Load Balancers
 app.set('trust proxy', 1);
 
-// 2. Security & Middleware
 app.use(helmet());
+
+// FIX: Add your Vercel production URL here
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', process.env.CLIENT_URL].filter(Boolean),
+  origin: [
+    'http://localhost:5173', 
+    'http://localhost:3000', 
+    'https://artiwary.vercel.app'
+  ],
   methods: ['GET', 'POST'],
   credentials: true
 }));
+
 app.use(express.json({ limit: '10kb' }));
 
-// 3. Root and Health Check Routes
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'Backend API is live' });
-});
+// Health Check
+app.get('/', (req, res) => res.status(200).json({ status: 'API is running' }));
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', uptime: process.uptime() });
-});
-
-// 4. Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -37,19 +35,10 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// 5. Database
-mongoose.connect(process.env.MONGODB_URI, {
-  serverSelectionTimeoutMS: 10000,
-  family: 4
-})
-.then(() => console.log('Connected to MongoDB successfully!'))
-.catch(err => console.error('DB Connection Error:', err.message));
-
-// 6. Routes
-app.use('/api/chat', require('./routes/chatRoutes'));
+// Routes
 app.use('/api/contact', require('./routes/contactRoutes'));
 
-// 7. Global Error Handling
+// Global Error Handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal Server Error' });
