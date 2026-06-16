@@ -1,6 +1,3 @@
-const { setServers } = require("node:dns/promises");
-setServers(["8.8.8.8"]);
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -9,9 +6,11 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 
 const app = express();
+
+// 1. Trust proxy: Required for correct IP detection behind Render's load balancer
 app.set('trust proxy', 1);
 
-// --- Security Middleware ---
+// 2. Security Middleware
 app.use(helmet());
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000', process.env.CLIENT_URL].filter(Boolean),
@@ -20,18 +19,22 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10kb' }));
 
-// --- Rate Limiting ---
+// 3. Rate Limiting: Applied after trust proxy
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  validate: { xForwardedForHeader: false } 
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,               // Limit each IP to 100 requests per window
+  standardHeaders: true,  // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false,   // Disable the `X-RateLimit-*` headers
+  validate: { xForwardedForHeader: false }
 });
+
+// Apply to all API routes
 app.use('/api/', limiter);
 
-// --- Database Connection ---
+// 4. Database Connection
 mongoose.connect(process.env.MONGODB_URI, {
   serverSelectionTimeoutMS: 10000,
-  family: 4
+  family: 4 // Force IPv4 to avoid common DNS issues in containerized environments
 })
 .then(() => console.log('Connected to MongoDB successfully!'))
 .catch(err => {
@@ -39,11 +42,11 @@ mongoose.connect(process.env.MONGODB_URI, {
   process.exit(1);
 });
 
-// --- Routes ---
+// 5. Routes
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 
-// --- Error Handling ---
+// 6. Global Error Handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal Server Error' });
