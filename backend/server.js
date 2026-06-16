@@ -8,30 +8,30 @@ const mongoose = require('mongoose');
 const app = express();
 
 app.set('trust proxy', 1);
-
 app.use(helmet());
 
-// FIX: Add your Vercel production URL here
+// CORS - Add your production frontend URL here
 app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'http://localhost:3000', 
-    'https://artiwary.vercel.app'
-  ],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://artiwary.vercel.app'],
   methods: ['GET', 'POST'],
   credentials: true
 }));
 
 app.use(express.json({ limit: '10kb' }));
 
+// --- DATABASE CONNECTION ---
+// Ensure MONGODB_URI is set in your environment variables
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB successfully!'))
+  .catch(err => console.error('Critical DB Connection Error:', err.message));
+
 // Health Check
 app.get('/', (req, res) => res.status(200).json({ status: 'API is running' }));
 
+// Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false
+  max: 100
 });
 app.use('/api/', limiter);
 
