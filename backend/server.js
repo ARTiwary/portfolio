@@ -9,6 +9,11 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 
+// --- DEBUG: Verify ENV variables ---
+if (!process.env.MONGODB_URI || !process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+  console.error("CRITICAL: Environment variables are missing!");
+}
+
 const app = express();
 app.set('trust proxy', 1);
 
@@ -31,12 +36,13 @@ app.get('/', (req, res) => res.status(200).json({ status: 'API is running' }));
 // Rate Limiting
 app.use('/api/', rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
-// Routes (Imports the router, which imports the model)
+// Routes
+// Note: We use the require here to avoid circular dependency loops during initialization
 app.use('/api/contact', require('./routes/contactRoutes'));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error("SERVER ERROR:", err.stack);
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
