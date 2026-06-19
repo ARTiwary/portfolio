@@ -22,7 +22,7 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://artiwary.vercel.app', 'https://portfolio-backend-1y6d.onrender.com'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://artiwary.vercel.app', 'https://portfolio-backend-1y6d.onrender.com', 'https://artiwary.netlify.app'],
   methods: ['GET', 'POST'],
   credentials: true
 }));

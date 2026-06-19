@@ -18,9 +18,9 @@ const Navbar = () => {
       <div className="relative z-10 px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex-shrink-0 cursor-pointer">
-          <span className="text-white font-sans font-bold text-2xl tracking-wide drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+          <a href="https://artiwary.netlify.app" className="text-white font-sans font-bold text-2xl tracking-wide drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
             Ayush Raj Tiwary
-          </span>
+          </a>
         </div>
 
         {/* Desktop Links */}
@@ -32,11 +32,20 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* CTA Button */}
-        <div className="hidden md:block flex-shrink-0">
+        {/* Right side controls */}
+        <div className="hidden md:flex items-center space-x-4">
+          {/* CTA Button */}
           <a href="#contact" className="relative overflow-hidden group px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-sans font-semibold text-sm tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.5)]">
             <span className="relative z-10">Open to Opportunities</span>
             <div className="absolute inset-0 h-full w-full bg-white/20 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+          </a>
+
+          {/* Switch Mode Button */}
+          <a 
+            href="https://artiwary.netlify.app" 
+            className="px-4 py-2 rounded-full border border-white/20 text-white font-sans text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300"
+          >
+            Switch mode
           </a>
         </div>
 
@@ -63,6 +72,9 @@ const Navbar = () => {
                   {link}
                 </a>
               ))}
+              <a href="https://artiwary.netlify.app" className="text-blue-400 font-sans font-bold text-lg border-b border-blue-400">
+                Switch mode
+              </a>
             </div>
           </motion.div>
         )}
