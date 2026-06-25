@@ -84,7 +84,7 @@ const About = () => {
           </h2>
 
           <p className="text-xl md:text-2xl text-gray-200 leading-relaxed mb-6">
-            I’m Ayush Raj Tiwary, a 3rd-year B.Tech student specializing in
+            I’m Ayush Raj Tiwary, a 4th-year B.Tech student specializing in
             Artificial Intelligence and Machine Learning, and a Full Stack
             Developer focused on building modern, scalable web applications.
           </p>
@@ -115,7 +115,7 @@ const About = () => {
             {/* Experience */}
             <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10">
               <h3 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-pink-500 mb-2">
-                3rd Year
+                4th Year
               </h3>
 
               <p className="text-sm text-gray-400 uppercase">
