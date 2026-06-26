@@ -160,9 +160,9 @@ router.post('/', async (req, res) => {
 
     const chatCompletion = await groq.chat.completions.create({
       messages,
-      model: 'llama-3.1-8b-instant',
+      model: 'openai/gpt-oss-20b',
       temperature: 0.5,
-      max_tokens: 350,
+      max_tokens: 550,
     });
 
     const reply = chatCompletion.choices[0].message.content;
