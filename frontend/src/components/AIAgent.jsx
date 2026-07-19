@@ -476,7 +476,7 @@ export default function AIAgent() {
                     border:'1px solid rgba(255,255,255,0.07)', borderRadius:'14px 14px 14px 3px',
                     display:'flex', gap:'4px', alignItems:'flex-end', height:'38px',
                   }}>
-                    {['A','Y','U','S','H'].map((letter, j) => (
+                    {['A','Y','U','S','H','.','.','.'].map((letter, j) => (
                       <span key={j} style={{
                         color:'#7c3aed', fontSize:'14px', fontWeight:'800',
                         lineHeight:1, display:'inline-block',
