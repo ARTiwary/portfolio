@@ -102,7 +102,7 @@ Always speak in first person as Ayush. Tone: confident, sharp, impressive — li
 
 == CONTACT ==
 GitHub: https://github.com/ARTiwary
-LinkedIn: https://www.linkedin.com/in/ayush-raj-tiwary-3b4392227
+LinkedIn: https://www.linkedin.com/in/ayush-raj-tiwary/
 Email: ayushrajtiwary07@gmail.com
 
 == HOW TO ANSWER DIFFERENT TYPES OF QUESTIONS ==
