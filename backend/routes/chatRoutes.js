@@ -274,7 +274,7 @@ router.post('/', async (req, res) => {
       messages,
       model: 'openai/gpt-oss-20b',
       temperature: 0.5,
-      max_tokens: 550,
+      max_tokens: 600,
     });
 
     const reply = chatCompletion.choices[0].message.content;
