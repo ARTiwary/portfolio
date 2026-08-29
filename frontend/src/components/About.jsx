@@ -9,6 +9,7 @@ const About = () => {
   const contentRef = useRef(null);
   const imageRef = useRef(null);
   const statsRef = useRef(null);
+  const resumeRef = useRef(null);
 
   useEffect(() => {
     gsap.fromTo(
@@ -34,6 +35,22 @@ const About = () => {
         y: 0,
         duration: 1,
         stagger: 0.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: statsRef.current,
+          start: 'top 85%',
+        },
+      }
+    );
+
+    gsap.fromTo(
+      resumeRef.current,
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: 0.4,
         ease: 'power2.out',
         scrollTrigger: {
           trigger: statsRef.current,
@@ -133,6 +150,53 @@ const About = () => {
                 Developer Focus
               </p>
             </div>
+          </div>
+
+          {/* RESUME ACTIONS */}
+          <div ref={resumeRef} className="mt-10 flex flex-wrap items-center gap-4">
+            <a
+              href="/resume.pdf"
+              download="Ayush_Raj_Tiwary_Resume.pdf"
+              className="group relative overflow-hidden flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white font-semibold text-sm tracking-wide shadow-[0_8px_30px_rgba(99,102,241,0.35)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_8px_40px_rgba(147,51,234,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300"
+            >
+              <svg
+                className="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-y-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span className="relative z-10">Download Resume</span>
+              <span className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
+            </a>
+
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 px-8 py-4 rounded-full border border-white/15 text-gray-300 font-semibold text-sm tracking-wide transition-all duration-300 hover:text-white hover:border-white/40 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+              View Online
+            </a>
           </div>
         </div>
 
