@@ -28,7 +28,9 @@ function detectLanguage(text) {
 }
 
 function BotText({ text }) {
-  const html = text
+  const sanitizedText = text.replace(/<(?=(?:https?:\/\/))[^\s>]+>/g, (match) => match.slice(1, -1));
+
+  const html = sanitizedText
     .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#c4b5fd;font-weight:700">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em style="color:#e2d9ff">$1</em>')
     .replace(/`(.+?)`/g, '<code style="background:rgba(139,92,246,0.15);padding:1px 6px;border-radius:4px;font-size:11px;color:#a78bfa;font-family:monospace">$1</code>')
@@ -39,7 +41,8 @@ function BotText({ text }) {
 }
 
 function TypewriterText({ text, onDone }) {
-  const clean = text
+  const sanitizedText = text.replace(/<(?=(?:https?:\/\/))[^\s>]+>/g, (match) => match.slice(1, -1));
+  const clean = sanitizedText
     .replace(/\*\*(.+?)\*\*/g, '$1')
     .replace(/\*(.+?)\*/g, '$1')
     .replace(/`(.+?)`/g, '$1')
@@ -136,14 +139,7 @@ export default function AIAgent() {
     if (phase === 'chat') setTimeout(() => inputRef.current?.focus(), 300);
   }, [phase]);
 
-  const sendMessage = async (text) => {
-    if (!text.trim() || loading) return;
-    const lang = detectLanguage(text);
-    const userMsg = { sender: 'user', text };
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
-    setLoading(true);
-    setSpeaking(false);
+  const executeFetch = async (text, lang, currentHistory) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
@@ -151,7 +147,7 @@ export default function AIAgent() {
         body: JSON.stringify({
           message: text,
           detectedLanguage: lang,
-          history: messages.map(m => ({
+          history: currentHistory.slice(0, -1).map(m => ({
             role: m.sender === 'user' ? 'user' : 'assistant',
             content: m.text,
           })),
@@ -170,6 +166,22 @@ export default function AIAgent() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const sendMessage = async (text) => {
+    if (!text.trim() || loading) return;
+    const lang = detectLanguage(text);
+    const userMsg = { sender: 'user', text };
+    
+    setMessages(prev => {
+      const updatedMessages = [...prev, userMsg];
+      executeFetch(text, lang, updatedMessages);
+      return updatedMessages;
+    });
+
+    setInput('');
+    setLoading(true);
+    setSpeaking(false);
   };
 
   const handleSubmit = (e) => {
@@ -244,7 +256,7 @@ export default function AIAgent() {
                     background:`rgba(139,92,246,${0.4 + (i%3)*0.2})`,
                     height:`${h}px`,
                     animation:`orbitLetterPop ${0.8 + i*0.1}s ${i*0.08}s ease-in-out infinite`,
-                  }}/>
+                  }}></div>
                 ))}
               </div>
             </div>
@@ -257,17 +269,17 @@ export default function AIAgent() {
                 background:'radial-gradient(circle, rgba(124,58,237,0.3) 0%, transparent 70%)',
                 animation:'orbitAurora 3s ease-in-out infinite',
                 pointerEvents:'none',
-              }}/>
+              }}></div>
               <div style={{
                 position:'absolute', inset:0, borderRadius:'50%',
                 border:'2px solid rgba(139,92,246,0.4)',
                 animation:'orbitRipple 2.5s ease-out infinite',
-              }}/>
+              }}></div>
               <div style={{
                 position:'absolute', inset:0, borderRadius:'50%',
                 border:'2px solid rgba(139,92,246,0.2)',
                 animation:'orbitRipple 2.5s ease-out 0.8s infinite',
-              }}/>
+              }}></div>
               <div style={{
                 width:'60px', height:'60px', borderRadius:'50%',
                 background:'linear-gradient(135deg,rgba(124,58,237,0.2),rgba(37,99,235,0.2))',
@@ -286,7 +298,7 @@ export default function AIAgent() {
                 background:'#22d3ee', border:'2px solid #050505',
                 boxShadow:'0 0 8px #22d3ee',
                 animation:'orbitBlink 2.5s infinite',
-              }}/>
+              }}></div>
             </div>
           </div>
         )}
@@ -306,7 +318,7 @@ export default function AIAgent() {
                 <div>
                   <div style={{ color:'#e2d9ff', fontSize:'14px', fontWeight:'700' }}>Ayush Orbit</div>
                   <div style={{ display:'flex', alignItems:'center', gap:'4px' }}>
-                    <span style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#22d3ee', display:'inline-block', boxShadow:'0 0 6px #22d3ee' }}/>
+                    <span style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#22d3ee', display:'inline-block', boxShadow:'0 0 6px #22d3ee' }}></span>
                     <span style={{ color:'#22d3ee', fontSize:'10px', letterSpacing:'1px', textTransform:'uppercase', fontWeight:'600' }}>Online • 15 Languages</span>
                   </div>
                 </div>
@@ -367,7 +379,7 @@ export default function AIAgent() {
                 <div>
                   <div style={{ color:'#e2d9ff', fontSize:'13px', fontWeight:'700' }}>Ayush Orbit</div>
                   <div style={{ display:'flex', alignItems:'center', gap:'4px' }}>
-                    <span style={{ width:'6px', height:'6px', borderRadius:'50%', background: loading ? '#f59e0b' : '#22d3ee', display:'inline-block', boxShadow:`0 0 6px ${loading ? '#f59e0b' : '#22d3ee'}`, transition:'all 0.3s' }}/>
+                    <span style={{ width:'6px', height:'6px', borderRadius:'50%', background: loading ? '#f59e0b' : '#22d3ee', display:'inline-block', boxShadow:`0 0 6px ${loading ? '#f59e0b' : '#22d3ee'}`, transition:'all 0.3s' }}></span>
                     <span style={{ color: loading ? '#f59e0b' : '#22d3ee', fontSize:'10px', letterSpacing:'1px', fontWeight:'600', transition:'all 0.3s' }}>
                       {loading ? 'THINKING...' : 'ONLINE • AI AGENT'}
                     </span>
@@ -486,7 +498,7 @@ export default function AIAgent() {
                   </div>
                 </div>
               )}
-              <div ref={chatEndRef}/>
+              <div ref={chatEndRef}></div>
             </div>
 
             {/* Input */}
