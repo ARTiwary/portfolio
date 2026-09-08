@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const links = ['Home', 'About', 'Works', 'Tech-Stack', 'Contact'];
+  const links = ['Home', 'About', 'Tech-Stack', 'Works', 'Contact'];
 
   return (
     <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-7xl z-50 rounded-2xl bg-[#050505]/40 backdrop-blur-md border border-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)] border-b-white/5 transition-all duration-300">

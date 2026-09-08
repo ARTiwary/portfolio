@@ -7,9 +7,15 @@ gsap.registerPlugin(ScrollTrigger);
 const About = () => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
+  const bioRef = useRef(null);
   const imageRef = useRef(null);
   const statsRef = useRef(null);
+  const skillsRef = useRef(null);
   const resumeRef = useRef(null);
+
+  const bioText =
+    "I'm Ayush Raj Tiwary, an AI/ML engineer and full-stack developer. On the ML side I work with PyTorch, LangChain, and vector search for GenAI and RAG; on the product side I ship it with FastAPI, React, and Node.js — turning models into things people can actually use.";
+  const bioWords = bioText.split(' ');
 
   useEffect(() => {
     gsap.fromTo(
@@ -39,6 +45,43 @@ const About = () => {
         scrollTrigger: {
           trigger: statsRef.current,
           start: 'top 85%',
+        },
+      }
+    );
+
+    // Words start dim and light up one by one as the bio line scrolls
+    // through view — tied directly to scroll position (scrub: true), not
+    // time, so it feels connected to the user's own scrolling rather than
+    // an autoplaying animation.
+    const bioWordEls = bioRef.current.querySelectorAll('.reveal-word');
+    gsap.fromTo(
+      bioWordEls,
+      { opacity: 0.2 },
+      {
+        opacity: 1,
+        ease: 'none',
+        stagger: 0.04,
+        scrollTrigger: {
+          trigger: bioRef.current,
+          start: 'top 85%',
+          end: 'top 35%',
+          scrub: true,
+        },
+      }
+    );
+
+    gsap.fromTo(
+      skillsRef.current.children,
+      { opacity: 0, y: 12 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        stagger: 0.06,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: skillsRef.current,
+          start: 'top 90%',
         },
       }
     );
@@ -75,6 +118,16 @@ const About = () => {
     );
   }, []);
 
+  const skills = [
+    'Python & PyTorch',
+    'LLMs & GenAI',
+    'Vector Search / RAG',
+    'Computer Vision',
+    'FastAPI',
+    'React & Node.js',
+    'Next.js',
+  ];
+
   return (
     <section
       id="about"
@@ -100,54 +153,62 @@ const About = () => {
             About Me
           </h2>
 
-          <p className="text-xl md:text-2xl text-gray-200 leading-relaxed mb-6">
-            I’m Ayush Raj Tiwary, a 4th-year B.Tech student specializing in
-            Artificial Intelligence and Machine Learning, and a Full Stack
-            Developer focused on building modern, scalable web applications.
+          <p ref={bioRef} className="text-xl md:text-2xl text-white leading-relaxed mb-6">
+            {bioWords.map((word, i) => (
+              <span key={i} className="reveal-word inline-block mr-[0.35em]">
+                {word}
+              </span>
+            ))}
           </p>
 
-          <p className="text-base md:text-lg text-gray-400 leading-loose mb-12">
-            I work primarily with the MERN stack while also exploring AI/ML
-            concepts like deep learning, computer vision, and model deployment.
-            I enjoy turning ideas into real-world applications by combining
-            software engineering with intelligent systems.
+          <p className="text-sm md:text-base text-gray-500 mb-8">
+            4th-year B.Tech student, Artificial Intelligence & Machine Learning
           </p>
+
+          {/* SKILL PILLS */}
+          <div ref={skillsRef} className="flex flex-wrap gap-2.5 mb-10">
+            {skills.map((skill) => (
+              <span
+                key={skill}
+                className="px-4 py-1.5 rounded-full text-xs md:text-sm font-medium text-gray-300 bg-white/5 border border-white/10 backdrop-blur-md"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
 
           {/* STATS */}
           <div
             ref={statsRef}
-            className="grid grid-cols-2 md:grid-cols-3 gap-6"
+            className="grid grid-cols-3 gap-4 md:gap-6"
           >
             {/* Projects */}
-            <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10">
-              <h3 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500 mb-2">
+            <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl px-5 py-6 text-center transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10">
+              <h3 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500 mb-1">
                 6+
               </h3>
-
-              <p className="text-sm text-gray-400 uppercase">
-                Projects Built
+              <p className="text-xs text-gray-400 uppercase tracking-wide">
+                Projects
               </p>
             </div>
 
-            {/* Experience */}
-            <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10">
-              <h3 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-pink-500 mb-2">
-                4th Year
+            {/* Specialization */}
+            <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl px-5 py-6 text-center transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10">
+              <h3 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-pink-500 mb-1">
+                AI/ML
               </h3>
-
-              <p className="text-sm text-gray-400 uppercase">
-                B.Tech Student
+              <p className="text-xs text-gray-400 uppercase tracking-wide">
+                Specialization
               </p>
             </div>
 
-            {/* Focus */}
-            <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10 col-span-2 md:col-span-1">
-              <h3 className="text-4xl font-black text-white mb-2">
+            {/* Engineering */}
+            <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl px-5 py-6 text-center transition-transform duration-300 hover:-translate-y-2 hover:bg-white/10">
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-1">
                 Full Stack
               </h3>
-
-              <p className="text-sm text-gray-400 uppercase">
-                Developer Focus
+              <p className="text-xs text-gray-400 uppercase tracking-wide">
+                Engineering
               </p>
             </div>
           </div>

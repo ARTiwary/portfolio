@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -10,30 +10,34 @@ export default function FrameScroll() {
   const text1Ref = useRef(null);
   const text2Ref = useRef(null);
   const text3Ref = useRef(null);
-  const popupRef = useRef(null); // Added for the popup
+  const popupRef = useRef(null);
 
   // Generate sparse particle fields
   const particles = useMemo(() => {
     return Array.from({ length: 20 }).map((_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
-      size: `${Math.random() * 2 + 1}px`, // 1px to 3px
-      duration: `${Math.random() * 15 + 15}s`, // 15s to 30s
-      delay: `${Math.random() * -30}s`, // start at different points
-      opacity: Math.random() * 0.5 + 0.1, // very low opacity
+      size: `${Math.random() * 2 + 1}px`,
+      duration: `${Math.random() * 15 + 15}s`,
+      delay: `${Math.random() * -30}s`,
+      opacity: Math.random() * 0.5 + 0.1,
     }));
   }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
-    const frameCount = 288; 
-    
+
+    // Single source of truth for frame count. Everything else scales off this,
+    // so bumping the frame count later won't desync the text timing.
+    const frameCount = 288;
+
     const currentFrame = (index) =>
       `/frameimage/ezgif-frame-${(index + 1).toString().padStart(3, "0")}.jpg`;
 
     const images = [];
     const sequence = { frame: 0 };
+    let lastDrawnFrame = -1; // avoids re-drawing the same image every tick
 
     for (let i = 0; i < frameCount; i++) {
       const img = new window.Image();
@@ -42,20 +46,29 @@ export default function FrameScroll() {
     }
 
     const render = () => {
-      const img = images[sequence.frame];
-      if (img && img.complete) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        
-        const scaleX = canvas.width / img.width;
-        const scaleY = canvas.height / img.height;
-        const scale = Math.max(scaleX, scaleY); // cover
-        
-        const x = (canvas.width / 2) - (img.width / 2) * scale;
-        const y = (canvas.height / 2) - (img.height / 2) * scale;
-        
-        // Static frame rendering. No camera rotation or zoom as requested.
-        context.drawImage(img, x, y, img.width * scale, img.height * scale);
+      // Walk backwards from the target frame to the nearest already-loaded
+      // image, so a slow-loading frame holds the last good frame instead of
+      // flashing blank while scrolling.
+      let frameToDraw = sequence.frame;
+      while (frameToDraw > 0 && !(images[frameToDraw] && images[frameToDraw].complete)) {
+        frameToDraw--;
       }
+
+      if (frameToDraw === lastDrawnFrame) return;
+      const img = images[frameToDraw];
+      if (!img || !img.complete) return;
+
+      lastDrawnFrame = frameToDraw;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      const scaleX = canvas.width / img.width;
+      const scaleY = canvas.height / img.height;
+      const scale = Math.max(scaleX, scaleY); // cover
+
+      const x = canvas.width / 2 - (img.width / 2) * scale;
+      const y = canvas.height / 2 - (img.height / 2) * scale;
+
+      context.drawImage(img, x, y, img.width * scale, img.height * scale);
     };
 
     if (images[0]) {
@@ -66,144 +79,191 @@ export default function FrameScroll() {
       if (canvas) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        lastDrawnFrame = -1; // force a redraw at the new canvas size
         render();
       }
     };
-    
+
     handleResize();
     window.addEventListener("resize", handleResize);
+
+    // The timeline's internal "duration" is just an abstract time unit, but
+    // tying it directly to frameCount keeps every keyframe below expressed
+    // as a simple fraction of the whole sequence — easier to reason about
+    // and safe if frameCount ever changes.
+    const timelineDuration = frameCount;
+    const at = (fraction) => timelineDuration * fraction;
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
         pin: true,
-        scrub: 1, 
+        scrub: 0.75, // slightly tighter than 1 for a more responsive, less "laggy" feel
         start: "top top",
         end: "+=4000",
       },
     });
 
-    // 1. Scrub frames from 0 to 239 over the entire scroll duration
-    // Main clock: duration 240 matches exact frame logic map
-    tl.to(sequence, {
-      frame: frameCount - 1,
-      snap: "frame",
-      ease: "none",
-      duration: 240, 
-      onUpdate: () => requestAnimationFrame(render),
-    }, 0);
+    // Scrub frames 0 -> frameCount-1 across the whole scroll duration
+    tl.to(
+      sequence,
+      {
+        frame: frameCount - 1,
+        snap: "frame",
+        ease: "none",
+        duration: timelineDuration,
+        onUpdate: render,
+      },
+      0
+    );
 
     // Initial resets for texts
     gsap.set([text1Ref.current, text2Ref.current, text3Ref.current], { opacity: 0 });
-    gsap.set(popupRef.current, { opacity: 1 }); // Ensure popup starts visible
+    gsap.set(popupRef.current, { opacity: 1, y: 0 });
 
-    // Popup animation: Fade out immediately at start (0-2 frames)
-    tl.to(popupRef.current, { opacity: 0, duration: 2, ease: "power1.inOut" }, 0);
+    // Popup fades (and lifts slightly) out right as scrolling begins
+    tl.to(
+      popupRef.current,
+      { opacity: 0, y: -12, duration: at(1 / 120), ease: "power1.inOut" },
+      0
+    );
 
-    /* 
-      FRAME LOGIC MAP
-      Frame 1-60: empty
-      Frame 61-100: "I am Leeshark" fades in (starts at 60, ends ~80, stays till 100)
-                    with slight upward floating effect.
-      Frame 101-140: First text dissolves (101-120), "Full Stack Developer" fades in (120-140).
-      Frame 141-180: Text 2 remains stable
-      Frame 181-220: Text 2 fades out (181-200), "About Me" fades in (200-220).
-      Frame 221-240: Text 3 stays visible.
+    /*
+      FRAME LOGIC MAP (as fractions of the full sequence)
+      0%     - 25%  : empty
+      25%    - ~42% : "I am Ayush Raj Tiwary" fades in, holds, dissolves
+      42%    - 75%  : "AI/ML Engineer & Full Stack Developer" fades in, holds, fades out
+      75%    - 100% : "Let's Build Something That Matters" fades in and stays
     */
-   
-    // --- Block 1: "I am Leeshark" ---
-    // Fade in and slight float up (Frame 60-80 visible by 80)
-    tl.fromTo(text1Ref.current, 
-      { opacity: 0, y: 15 }, 
-      { opacity: 1, y: 0, duration: 20, ease: "power2.out" }, 
-      60
+
+    // --- Block 1 ---
+    tl.fromTo(
+      text1Ref.current,
+      { opacity: 0, y: 15 },
+      { opacity: 1, y: 0, duration: at(1 / 12), ease: "power2.out" },
+      at(0.25)
     );
-    // Dissolve gently (Frame 100-120) and continue float
-    tl.to(text1Ref.current, 
-      { opacity: 0, y: -15, duration: 20, ease: "power2.in" }, 
-      100
+    tl.to(
+      text1Ref.current,
+      { opacity: 0, y: -15, duration: at(1 / 12), ease: "power2.in" },
+      at(0.4167)
     );
 
-    // --- Block 2: "Full Stack Developer" ---
-    // Forms in center (stable position, no movement -> no y/scale animation)
-    tl.fromTo(text2Ref.current, 
-      { opacity: 0 }, 
-      { opacity: 1, duration: 20, ease: "power1.inOut" }, 
-      120
-    );
-    // Fades out smoothly 
-    tl.to(text2Ref.current, 
-      { opacity: 0, duration: 20, ease: "power1.inOut" }, 
-      180
-    );
-
-    // --- Block 3: "About Me" ---
-    // Final text appears, slightly bigger (Frame 200-220)
-    tl.fromTo(text3Ref.current,
+    // --- Block 2 ---
+    tl.fromTo(
+      text2Ref.current,
       { opacity: 0 },
-      { opacity: 1, duration: 20, ease: "power1.inOut" },
-      200
+      { opacity: 1, duration: at(1 / 12), ease: "power1.inOut" },
+      at(0.5)
     );
-    // Stays visible till 240
+    tl.to(
+      text2Ref.current,
+      { opacity: 0, duration: at(1 / 12), ease: "power1.inOut" },
+      at(0.75)
+    );
+
+    // --- Block 3 ---
+    tl.fromTo(
+      text3Ref.current,
+      { opacity: 0 },
+      { opacity: 1, duration: at(1 / 12), ease: "power1.inOut" },
+      at(0.8333)
+    );
+    // Stays visible to the end
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
 
   return (
-    <>
-      <div 
-        ref={containerRef} 
-        className="w-full h-screen bg-[#000000] overflow-hidden relative flex items-center justify-center p-0 m-0"
-      >
-        {/* Anti-gravity subtle particles */}
-        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden mix-blend-screen">
-          {particles.map((p) => (
-            <div
-              key={p.id}
-              className="particle"
-              style={{
-                left: p.left,
-                width: p.size,
-                height: p.size,
-                animationDuration: p.duration,
-                animationDelay: p.delay,
-              }}
-            />
-          ))}
-        </div>
+    <div
+      ref={containerRef}
+      className="w-full h-screen bg-black overflow-hidden relative flex items-center justify-center p-0 m-0"
+    >
+      {/* Ambient particles */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden mix-blend-screen">
+        {particles.map((p) => (
+          <div
+            key={p.id}
+            className="particle"
+            style={{
+              left: p.left,
+              width: p.size,
+              height: p.size,
+              animationDuration: p.duration,
+              animationDelay: p.delay,
+            }}
+          />
+        ))}
+      </div>
 
-        {/* Video Frame Canvas */}
-        <canvas
-          ref={canvasRef}
-          className="w-full h-full block relative z-10 opacity-70"
-        />
-        
-        {/* Popup Message */}
-        <div ref={popupRef} className=" absolute inset-0 z-50 flex items-center justify-start pointer-events-none">
-          <div className="bg-[#050505]/60 backdrop-blur-md border border-white/10 px-8 py-6 rounded-3xl shadow-[0_0_30px_rgba(255,255,255,0.1)] text-center animate-pulse">
-            <h1 className="text-3xl font-bold text-white mb-2">Ayush Raj Tiwary</h1>
-            <p className="text-gray-400 font-medium uppercase text-sm">Scroll to explore</p>
+      {/* Frame sequence canvas */}
+      <canvas ref={canvasRef} className="w-full h-full block relative z-10 opacity-70" />
+
+      {/* Intro caption — matches the page's own palette: black, white, blue-400 */}
+      <div
+        ref={popupRef}
+        className="absolute inset-0 z-50 flex flex-col justify-end pointer-events-none px-8 md:px-16 pb-16 md:pb-20"
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+
+        <div className="relative max-w-xl">
+          <div className="pl-5 md:pl-6 border-l-2 border-blue-400/70">
+            <h1 className="text-[2.2rem] md:text-[3.4rem] leading-[1.05] font-black text-white tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.6)]">
+              Ayush Raj Tiwary
+            </h1>
+            <p className="mt-3 text-sm md:text-base font-medium text-blue-400 tracking-wide">
+              AI/ML Engineer — Full Stack Developer
+            </p>
+          </div>
+
+          <div className="mt-10 flex items-center gap-3">
+            <span className="scroll-cue-dash w-8 h-px bg-white/50" />
+            <span className="text-[11px] tracking-[0.2em] text-white/60">
+              Scroll to explore
+            </span>
           </div>
         </div>
-        
-        {/* Text Area */}
-        <div className="absolute inset-0 flex flex-col justify-center z-20 pointer-events-none text-white tracking-wide px-10 md:px-20">
-          <h1 ref={text1Ref} className="absolute self-start text-left text-5xl md:text-7xl font-sans font-black drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-            I am Ayush <br /> Raj Tiwary
-          </h1>
-          
-          <h2 ref={text2Ref} className="absolute self-end text-right text-4xl md:text-6xl font-sans font-bold drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] tracking-wider">
-            AI/ML Engineer & <br /> Full Stack Developer
-          </h2>
-           <h3 ref={text3Ref} className="absolute self-center text-center text-3xl md:text-[3rem] font-sans font-bold drop-shadow-[0_0_25px_rgba(255,255,255,0.6)] tracking-widest">
-    Let's Build Something That Matters<br /> 
-    <span className="text-blue-400">Open to Work — Let's Connect</span>
-  </h3>
-        </div>
+
+        <style>{`
+          .scroll-cue-dash {
+            transform-origin: left;
+            animation: scrollCueDrift 2.4s ease-in-out infinite;
+          }
+          @keyframes scrollCueDrift {
+            0%, 100% { transform: scaleX(0.6); opacity: 0.4; }
+            50%      { transform: scaleX(1);   opacity: 0.9; }
+          }
+        `}</style>
       </div>
-    </>
+
+      {/* Scroll-driven text */}
+      <div className="absolute inset-0 flex flex-col justify-center z-20 pointer-events-none text-white tracking-wide px-10 md:px-20">
+        <h1
+          ref={text1Ref}
+          className="absolute self-start text-left text-5xl md:text-7xl font-sans font-black drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+        >
+          I am Ayush <br /> Raj Tiwary
+        </h1>
+
+        <h2
+          ref={text2Ref}
+          className="absolute self-end text-right text-4xl md:text-6xl font-sans font-bold drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] tracking-wider"
+        >
+          AI/ML Engineer & <br /> Full Stack Developer
+        </h2>
+
+        <h3
+          ref={text3Ref}
+          className="absolute self-center text-center text-3xl md:text-[3rem] font-sans font-bold drop-shadow-[0_0_25px_rgba(255,255,255,0.6)] tracking-widest"
+        >
+          Let's Build Something That Matters
+          <br />
+          <span className="text-blue-400">Open to Work — Let's Connect</span>
+        </h3>
+      </div>
+    </div>
   );
 }

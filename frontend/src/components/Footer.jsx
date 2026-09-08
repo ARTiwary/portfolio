@@ -54,7 +54,7 @@ const Footer = () => {
           
           {/* Navigation Links */}
           <div className="flex items-center gap-6 md:gap-10">
-            {['Home', 'About', 'Works', 'Tech-Stack', 'Contact'].map((link) => (
+            {['Home', 'About', 'Tech-Stack', 'Works', 'Contact'].map((link) => (
               <a 
                 key={link} 
                 href={`#${link === 'Home' ? 'hero' : link.toLowerCase()}`}
