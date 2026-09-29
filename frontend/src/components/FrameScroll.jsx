@@ -256,13 +256,13 @@ export default function FrameScroll() {
         </h2>
 
         <h3
-          ref={text3Ref}
-          className="absolute self-center text-center text-3xl md:text-[3rem] font-sans font-bold drop-shadow-[0_0_25px_rgba(255,255,255,0.6)] tracking-widest"
-        >
-          Let's Build Something That Matters
-          <br />
-          <span className="text-blue-400">Open to Work — Let's Connect</span>
-        </h3>
+  ref={text3Ref}
+  className="absolute top-[80%] left-1/2 -translate-x-1/2 -translate-y-1/2 self-center text-center text-3xl md:text-[3rem] font-sans font-bold drop-shadow-[0_0_25px_rgba(255,255,255,0.6)] tracking-widest w-full"
+>
+  Let's Build Something That Matters
+  <br />
+  <span className="text-blue-400">Open to Work — Let's Connect</span>
+</h3>
       </div>
     </div>
   );
