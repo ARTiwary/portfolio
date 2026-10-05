@@ -1,4 +1,7 @@
 // MUST BE AT THE VERY TOP
+const { setServers } = require("node:dns/promises");
+setServers(["8.8.8.8"]);
+
 const dns = require("node:dns");
 dns.setDefaultResultOrder("ipv4first"); // Fixes network connectivity issues[cite: 2]
 
