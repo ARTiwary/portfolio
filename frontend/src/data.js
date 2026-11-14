@@ -1,3 +1,5 @@
+import { label } from "framer-motion/client";
+
 export const LINKS = {
   github: 'https://github.com/ARTiwary',
   linkedin: 'https://www.linkedin.com/in/ayush-raj-tiwary-3b4392227',
@@ -69,17 +71,21 @@ export const experience = [
   {
     role: 'Backend, AI & SaaS Innovation Intern',
     org: 'Axentra OS',
-    dates: 'Aug 2026 – Present',
+    dates: 'Aug 2026 – Nov 2026',
     logo: '/logos/axentra.png',
     points: [
-      'Built Pydantic-validated CRUD APIs (FastAPI, PostgreSQL) for customer and product records.',
-      'Designed a replenishment engine for a skincare e-commerce client: predicts consumption cycles, prompts a repurchase on day 25, and follows up 10–15 days later.',
+      'Built backend features for Axentra OS, a multi-tenant platform that brings customers back at the right time: merchant-configurable review and reorder reminders (timing, repeat interval, caps) and a Google Business Profile integration (per-merchant OAuth, live review reading, reply management, encrypted tokens).',
+      'Secured the platform with JWT auth, tenant isolation, rate limiting and audit logging, shipped with Alembic migrations, Docker and PostgreSQL and a 190-test pytest suite, then demoed it live to the engineering team.',
+      
+    ],
+    docs:[
+      { label: 'Internship certificate', href: '/certificates/axentra-internship-certificate.pdf' },
     ],
   },
   {
     role: 'Machine Learning Engineering Intern',
     org: 'FlyRank.ai',
-    dates: 'Jul – Sep 2026',
+    dates: 'Jul 2026 – Sep 2026',
     logo: '/logos/flyrank.png',
     points: [
       '36 practical assignments, 190+ verified hours: embeddings, clustering, intent modeling.',
